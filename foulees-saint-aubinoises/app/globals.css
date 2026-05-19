@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fsa-rose: #e8186d;
+  --color-fsa-rose-dark: #c0125a;
+  --color-fsa-rose-pale: #f5a0c4;
+  --color-fsa-noir: #1a1a1a;
+  --color-fsa-gris: #3d3d3d;
+  --color-fsa-gris-med: #888888;
+  --color-fsa-gris-pale: #f2f2f2;
+  --color-fsa-blanc: #ffffff;
+  --color-fsa-rose-bg: #fff0f6;
+
+  --font-bebas: "Bebas Neue", sans-serif;
+  --font-barlow: "Barlow", sans-serif;
+  --font-barlow-condensed: "Barlow Condensed", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-barlow);
+  background: var(--color-fsa-blanc);
+  color: var(--color-fsa-noir);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+.hero-home {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-home::before {
+  content: "";
+  position: absolute;
+  right: -120px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  border: 120px solid var(--color-fsa-rose);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.hero-home::after {
+  content: "";
+  position: absolute;
+  right: 80px;
+  bottom: -80px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: var(--color-fsa-rose);
+  opacity: 0.12;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*STYLE CARDS*/
+
+.style-card:hover {
+  border-color: var(--fsa-rose);
+}
+.style-card-icon {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  display: block;
+}
+.style-card-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+  color: var(--fsa-blanc);
+  margin-bottom: 8px;
+}
+.style-card-desc {
+  font-family: "Barlow", sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.6;
+}
+.style-card-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--fsa-rose);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.style-card:hover .style-card-accent {
+  transform: scaleX(1);
+}
