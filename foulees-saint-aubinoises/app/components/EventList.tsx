@@ -1,6 +1,7 @@
 "use client";
 
 import { Event } from "../types/database";
+import Link from "next/link";
 
 export function EventList({ events }: { events: Event[] }) {
   return (
@@ -33,7 +34,12 @@ export function EventList({ events }: { events: Event[] }) {
             <span className="bg-fsa-rose text-white text-xs font-barlow-condensed uppercase tracking-wider px-3 py-1 rounded-full">
               {event.lieu}
             </span>
-            <span className="text-fsa-rose font-bold text-lg">→</span>
+            <Link
+              href={`/agenda/${event.id}`}
+              className="text-fsa-rose font-bold text-lg"
+            >
+              →
+            </Link>
           </div>
         </div>
       ))}

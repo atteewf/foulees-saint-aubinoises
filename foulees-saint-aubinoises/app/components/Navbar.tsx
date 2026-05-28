@@ -47,20 +47,21 @@ export default function Navbar() {
               Le Club
             </Link>
           </li>
+
+          <li>
+            <Link
+              className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
+              href="/agenda"
+            >
+              Agenda
+            </Link>
+          </li>
           <li>
             <Link
               className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
               href="/galerie"
             >
               Galerie
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
-              href="/evenements"
-            >
-              Évènements
             </Link>
           </li>
           <li>
@@ -77,6 +78,22 @@ export default function Navbar() {
               href="/contact"
             >
               Contact
+            </Link>
+          </li>
+          <li>
+            <Link
+              className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
+              href="/adhesion"
+            >
+              Adhésion
+            </Link>
+          </li>
+          <li>
+            <Link
+              className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
+              href="/mentionslegales"
+            >
+              Mentions Légales
             </Link>
           </li>
         </ul>

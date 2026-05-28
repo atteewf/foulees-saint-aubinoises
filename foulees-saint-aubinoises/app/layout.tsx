@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Barlow, Barlow_Condensed } from "next/font/google";
 import Navbar from "@/app/components/Navbar";
+import Footer from "@/app/components/Footer";
+
 import "./globals.css";
 
 const bebas = Bebas_Neue({
@@ -35,9 +37,10 @@ export default function RootLayout({
       lang="fr"
       className={`${bebas.variable} ${barlow.variable} ${barlowCondensed.variable}`}
     >
-      <body className="min-h-screen flex flex-col bg-fsa-blanc text-fsa-noir">
+      <body className="min-h-screen flex flex-col bg-fsa-blanc text-fsa-noir w-full">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
