@@ -17,3 +17,14 @@ export type Photos = {
   categorie: string | null;
   event_id: string;
 };
+
+export type Resultats = {
+  id: string;
+  coureur: string;
+  course: string;
+  date: string;
+  distance: string | null;
+  temps: string | null;
+  classement: string | null;
+  created_at: string;
+};

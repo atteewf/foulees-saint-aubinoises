@@ -83,17 +83,9 @@ export default function Navbar() {
           <li>
             <Link
               className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
-              href="/adhesion"
+              href="/escapade"
             >
-              Adhésion
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
-              href="/mentionslegales"
-            >
-              Mentions Légales
+              Les Escapades Nocturnes 2026
             </Link>
           </li>
         </ul>
