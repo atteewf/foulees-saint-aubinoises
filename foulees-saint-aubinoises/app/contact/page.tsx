@@ -107,7 +107,6 @@ export default function ContactPage() {
               </a>
             </div>
 
-            {/* HelloAsso */}
             <div className="bg-fsa-noir rounded-2xl p-8 shadow-sm">
               <h2 className="font-bebas text-2xl text-white mb-2">
                 Rejoindre le club
