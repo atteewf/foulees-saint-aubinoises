@@ -28,3 +28,22 @@ export type Resultats = {
   classement: string | null;
   created_at: string;
 };
+
+export type Escapade = {
+  id: string;
+  event_id: string;
+  edition: string | null;
+  inscriptions_url: string | null;
+  association_solidarite: string | null;
+  association_url: string | null;
+  published: boolean;
+};
+export type Escapade_Epreuves = {
+  id: string;
+  escapade_id: string;
+  titre: string | null;
+  distance: string | null;
+  heure_depart: string | null;
+  tarif: string | null;
+  complet: boolean;
+};
