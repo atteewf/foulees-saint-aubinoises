@@ -2,7 +2,7 @@ import { supabase } from "@/app/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function EventDetailPage({
+export default async function GalerieDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -21,74 +21,235 @@ export default async function EventDetailPage({
     .eq("event_id", id);
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-16 w-full">
-      {/* Retour */}
-      <Link
-        href="/galerie"
-        className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med hover:text-fsa-rose transition-colors duration-200 flex items-center gap-2 mb-8"
+    <div style={{ width: "100%", background: "#0f0f0f", minHeight: "100vh" }}>
+      {/* Fond dots */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "1024px",
+          margin: "0 auto",
+          padding: "3rem 1.5rem",
+        }}
       >
-        ← Retour à la galerie
-      </Link>
+        {/* Retour */}
+        <Link
+          href="/galerie"
+          className="font-barlow-condensed uppercase"
+          style={{
+            fontSize: "0.75rem",
+            letterSpacing: "0.1em",
+            color: "rgba(255,255,255,0.4)",
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            marginBottom: "2rem",
+          }}
+        >
+          ← Retour à la galerie
+        </Link>
 
-      {/* Header */}
-      {event && (
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-3">
-            {event.type && (
-              <span className="bg-fsa-rose text-white font-barlow-condensed uppercase text-xs tracking-widest px-3 py-1 rounded-full">
-                {event.type}
-              </span>
-            )}
-            <span className="font-barlow text-sm text-fsa-gris-med">
-              {new Date(event.date).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-            {event.lieu && (
-              <>
-                <span className="text-fsa-gris-med/40">•</span>
-                <span className="font-barlow text-sm text-fsa-gris-med">
-                  {event.lieu}
-                </span>
-              </>
-            )}
-          </div>
-          <h1 className="font-bebas text-5xl text-fsa-noir">{event.nom}</h1>
-          {event.description && (
-            <p className="font-barlow text-fsa-gris mt-3 max-w-2xl">
-              {event.description}
-            </p>
-          )}
-          <p className="font-barlow text-fsa-gris-med text-sm mt-2">
-            {photos?.length} photo{photos?.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-      )}
-
-      {/* Grille photos */}
-      {photos && photos.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {photos.map((photo) => (
+        {/* Header event */}
+        {event && (
+          <div style={{ marginBottom: "2.5rem" }}>
             <div
-              key={photo.id}
-              className="relative aspect-square rounded-xl overflow-hidden group"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.75rem",
+                flexWrap: "wrap",
+              }}
             >
-              <Image
-                src={photo.url}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                alt={photo.nom}
-              />
+              {event.type && (
+                <span
+                  className="font-barlow-condensed uppercase"
+                  style={{
+                    fontSize: "0.65rem",
+                    letterSpacing: "0.1em",
+                    background: "#e8186d",
+                    color: "#fff",
+                    padding: "0.2rem 0.7rem",
+                    borderRadius: "999px",
+                  }}
+                >
+                  {event.type}
+                </span>
+              )}
+              <span
+                className="font-barlow"
+                style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)" }}
+              >
+                {new Date(event.date).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+              {event.lieu && (
+                <span
+                  className="font-barlow"
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "rgba(255,255,255,0.4)",
+                  }}
+                >
+                  · {event.lieu}
+                </span>
+              )}
             </div>
-          ))}
+            <h1
+              className="font-bebas"
+              style={{
+                fontSize: "3rem",
+                color: "#fff",
+                lineHeight: 1,
+                marginBottom: "0.5rem",
+              }}
+            >
+              {event.nom}
+            </h1>
+            {event.description && (
+              <p
+                className="font-barlow"
+                style={{
+                  fontSize: "0.9rem",
+                  color: "rgba(255,255,255,0.5)",
+                  maxWidth: "600px",
+                  lineHeight: 1.6,
+                }}
+              >
+                {event.description}
+              </p>
+            )}
+            <p
+              className="font-barlow-condensed uppercase"
+              style={{
+                fontSize: "0.7rem",
+                letterSpacing: "0.1em",
+                color: "#e8186d",
+                marginTop: "0.75rem",
+              }}
+            >
+              {photos?.length ?? 0} photo
+              {(photos?.length ?? 0) !== 1 ? "s" : ""}
+            </p>
+          </div>
+        )}
+
+        {/* Grille photos */}
+        {photos && photos.length > 0 ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: "0.75rem",
+            }}
+          >
+            {photos.map((photo) => (
+              <div
+                key={photo.id}
+                style={{
+                  position: "relative",
+                  aspectRatio: "1",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                }}
+                className="group"
+              >
+                <Image
+                  src={photo.url}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  className="group-hover:scale-105 transition-transform duration-300"
+                  alt={photo.nom ?? "photo"}
+                />
+                {/* Overlay hover */}
+                <div
+                  className="group-hover:opacity-100"
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)",
+                    opacity: 0,
+                    transition: "opacity 0.25s",
+                  }}
+                />
+                {photo.nom && (
+                  <p
+                    className="font-barlow-condensed group-hover:opacity-100"
+                    style={{
+                      position: "absolute",
+                      bottom: "0.75rem",
+                      left: "0.75rem",
+                      right: "0.75rem",
+                      fontSize: "0.75rem",
+                      color: "#fff",
+                      opacity: 0,
+                      transition: "opacity 0.25s",
+                    }}
+                  >
+                    {photo.nom}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ textAlign: "center", padding: "4rem 0" }}>
+            <p
+              className="font-bebas"
+              style={{
+                fontSize: "1.5rem",
+                color: "rgba(255,255,255,0.2)",
+                marginBottom: "0.5rem",
+              }}
+            >
+              Aucune photo pour cet événement
+            </p>
+            <p
+              className="font-barlow"
+              style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.2)" }}
+            >
+              Les photos arrivent bientôt.
+            </p>
+          </div>
+        )}
+
+        {/* Retour bas */}
+        <div style={{ textAlign: "center", marginTop: "3rem" }}>
+          <Link
+            href="/galerie"
+            className="font-barlow-condensed uppercase"
+            style={{
+              display: "inline-block",
+              fontSize: "0.8rem",
+              letterSpacing: "0.1em",
+              color: "rgba(255,255,255,0.4)",
+              textDecoration: "none",
+              border: "1px solid rgba(255,255,255,0.1)",
+              padding: "0.6rem 1.5rem",
+              borderRadius: "999px",
+            }}
+          >
+            ← Retour à la galerie
+          </Link>
         </div>
-      ) : (
-        <p className="font-barlow text-fsa-gris-med">
-          Aucune photo pour cet événement.
-        </p>
-      )}
-    </main>
+      </div>
+    </div>
   );
 }
