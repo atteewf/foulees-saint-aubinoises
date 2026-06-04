@@ -37,7 +37,7 @@ export default function RootLayout({
       lang="fr"
       className={`${bebas.variable} ${barlow.variable} ${barlowCondensed.variable}`}
     >
-      <body className="min-h-screen flex flex-col bg-fsa-blanc text-fsa-noir w-full">
+      <body className="bg-fsa-blanc text-fsa-noir">
         <Navbar />
         {children}
         <Footer />

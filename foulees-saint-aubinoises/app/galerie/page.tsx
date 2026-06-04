@@ -14,7 +14,9 @@ async function GalerieData() {
 
 export default function GaleriePage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 w-full py-12">
+    <div
+      style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
+    >
       <h1 className="font-bebas text-4xl text-fsa-noir">Galerie</h1>
       <Suspense fallback={<div>Chargement...</div>}>
         <GalerieData />

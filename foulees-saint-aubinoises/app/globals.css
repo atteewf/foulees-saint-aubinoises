@@ -36,11 +36,12 @@ body {
   font-family: var(--font-barlow);
   background: var(--color-fsa-blanc);
   color: var(--color-fsa-noir);
+  width: 100%;
 }
-
+/* 
 html {
   scrollbar-gutter: stable;
-}
+} */
 
 .hero-home {
   position: relative;

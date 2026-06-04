@@ -12,7 +12,9 @@ async function ResultsData() {
 
 export default function ResultatPage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 w-full py-12">
+    <div
+      style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
+    >
       <h1 className="font-bebas text-4xl text-fsa-noir">Resultats</h1>
       <Suspense fallback={<div>Chargement...</div>}>
         <ResultsData />

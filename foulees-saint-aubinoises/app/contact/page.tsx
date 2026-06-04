@@ -4,8 +4,10 @@ import { Mail, Phone, ExternalLink } from "lucide-react";
 
 export default function ContactPage() {
   return (
-    <main className="flex-1 min-h-screen bg-fsa-gris-pale py-16">
-      <div className="max-w-7xl mx-auto px-6 w-full py-16">
+    <main className="bg-fsa-gris-pale py-16">
+      <div
+        style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
+      >
         {/* Header */}
         <div className="mb-12">
           <p className="font-barlow-condensed text-fsa-rose uppercase tracking-widest text-sm mb-2">

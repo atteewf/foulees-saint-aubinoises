@@ -3,11 +3,9 @@ import Link from "next/link";
 export default function CourseNocturnePage() {
   return (
     <main className="w-full">
-      {/* Hero */}
-      <div className="relative bg-fsa-noir w-full px-6 py-24 text-center overflow-hidden">
-        <div className="absolute right-[-120px] top-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border-[100px] border-fsa-rose opacity-5 pointer-events-none" />
-        <div className="absolute left-[-80px] bottom-[-80px] w-[300px] h-[300px] rounded-full border-[60px] border-fsa-rose opacity-5 pointer-events-none" />
-        <div className="relative z-10 max-w-3xl mx-auto">
+      {/* Hero pleine largeur */}
+      <div className="bg-fsa-noir w-full px-6 py-24 text-center">
+        <div style={{ maxWidth: "768px", margin: "0 auto" }}>
           <span className="inline-block bg-fsa-rose/10 text-fsa-rose text-xs font-barlow-condensed uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
             Édition 2025 — Saint-Aubin-d'Aubigné
           </span>
@@ -29,7 +27,11 @@ export default function CourseNocturnePage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-16">
+      {/* Contenu centré */}
+      {/* Contenu centré */}
+      <div
+        style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
+      >
         {/* Épreuves */}
         <div className="mb-14">
           <span className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med block mb-4">
@@ -159,7 +161,7 @@ export default function CourseNocturnePage() {
           </div>
         </div>
 
-        {/* CTA bas de page */}
+        {/* CTA */}
         <div className="text-center">
           <a
             href="https://www.klikego.com/inscription/les-escapades-nocturnes-saint-aubinoises-2025/running-course-a-pied/1422072323642-10"

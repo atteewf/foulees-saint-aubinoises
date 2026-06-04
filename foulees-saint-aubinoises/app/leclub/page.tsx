@@ -1,13 +1,7 @@
 import { Users, Medal, MapPin, DoorOpen } from "lucide-react";
-import PageWrapper from "../components/PageWrapper";
+import { StatCounter } from "../components/StatCounter";
 
 export default function LeClubPage() {
-  const stats = [
-    { num: "120+", label: "Adhérents" },
-    { num: "1998", label: "Fondation" },
-    { num: "35", label: "Courses / an" },
-  ];
-
   const bureau = [
     { initials: "PL", name: "Pierre L.", role: "Président" },
     { initials: "ML", name: "Marie L.", role: "Secrétaire" },
@@ -17,22 +11,22 @@ export default function LeClubPage() {
 
   const valeurs = [
     {
-      icon: <Users size={18} className="text-fsa-rose" />,
+      icon: <Users size={18} />,
       title: "Convivialité",
       desc: "Courir ensemble dans la bonne humeur, du débutant au confirmé.",
     },
     {
-      icon: <Medal size={18} className="text-fsa-rose" />,
+      icon: <Medal size={18} />,
       title: "Dépassement",
       desc: "Se dépasser à son rythme, sans compétition entre membres.",
     },
     {
-      icon: <MapPin size={18} className="text-fsa-rose" />,
+      icon: <MapPin size={18} />,
       title: "Ancrage local",
       desc: "Fiers de représenter Saint-Aubin lors des courses bretonnes.",
     },
     {
-      icon: <DoorOpen size={18} className="text-fsa-rose" />,
+      icon: <DoorOpen size={18} />,
       title: "Accessibilité",
       desc: "Ouvert à tous, sans prérequis, avec ou sans licence FFA.",
     },
@@ -58,109 +52,270 @@ export default function LeClubPage() {
   ];
 
   return (
-    <PageWrapper>
-      <div className="max-w-5xl mx-auto px-6 w-full py-16">
-        {/* Hero */}
-        <div className="relative bg-fsa-noir w-full rounded-2xl px-8 py-20 text-center mb-12 overflow-hidden">
-          <div className="absolute right-[-120px] top-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border-[100px] border-fsa-rose opacity-5 pointer-events-none" />
-          <div className="absolute left-[-80px] bottom-[-80px] w-[300px] h-[300px] rounded-full border-[60px] border-fsa-rose opacity-5 pointer-events-none" />
-          <span className="inline-block bg-fsa-rose/10 text-fsa-rose text-xs font-barlow-condensed uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
-            Saint-Aubin-d'Aubigné · Ille-et-Vilaine
-          </span>
-          <h1 className="font-bebas text-6xl text-white tracking-wide mb-4">
-            Les Foulées <span className="text-fsa-rose">Saint-Aubinoises</span>
-          </h1>
-          <div className="w-10 h-0.5 bg-fsa-rose mx-auto mb-5" />
-          <p className="font-barlow text-white/50 text-base max-w-lg mx-auto leading-relaxed">
-            Association de course à pied ouverte à tous les niveaux, dans la
-            bonne humeur et la convivialité.
+    <div
+      style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
+    >
+      {/* Hero */}
+      <div
+        className="w-full rounded-2xl overflow-hidden"
+        style={{
+          backgroundImage: "url('/foulees/hero_leclub.PNG')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          marginBottom: "2rem",
+          position: "relative",
+          height: "280px",
+        }}
+      >
+        <img
+          src="/foulees/logo_fsa_fond_blanc.png"
+          alt="Coureurs FSA"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: "51%",
+            top: "42%",
+            transform: "translateX(-50%)",
+            height: "40%",
+            width: "auto",
+            objectFit: "contain",
+          }}
+        />
+      </div>
+
+      {/* Stats 3 + 1 */}
+      <div className="grid grid-cols-3 gap-4" style={{ marginBottom: "1rem" }}>
+        <StatCounter
+          target={120}
+          suffix="+"
+          duration={1500}
+          delay={0}
+          label="Adhérents"
+        />
+        <StatCounter
+          target={1998}
+          suffix=""
+          duration={2500}
+          delay={800}
+          label="Fondation"
+        />
+        <StatCounter
+          target={35}
+          suffix=""
+          duration={1200}
+          delay={2400}
+          label="Courses / an"
+        />
+      </div>
+      <div
+        style={{
+          marginBottom: "2rem",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ width: "34%" }}>
+          <StatCounter
+            target={100}
+            suffix="%"
+            suffixSmall="Bonne Humeur"
+            duration={1800}
+            delay={3500}
+            label=""
+          />
+        </div>
+      </div>
+
+      {/* Card photo groupe + bureau */}
+      <div
+        className="w-full rounded-2xl overflow-hidden"
+        style={{
+          background: "#1a1a1a",
+          border: "1px solid rgba(232,24,109,0.2)",
+          marginBottom: "2rem",
+        }}
+      >
+        <img
+          src="/foulees/photo_groupe.png"
+          alt="Groupe FSA"
+          style={{
+            width: "100%",
+            height: "380px",
+            objectFit: "cover",
+            objectPosition: "center center",
+          }}
+        />
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <p
+            className="font-bebas text-3xl"
+            style={{ color: "#fff", marginBottom: "0.5rem" }}
+          >
+            Les Foulées{" "}
+            <span style={{ color: "#e8186d" }}>Saint-Aubinoises</span>
+          </p>
+          <p
+            className="font-barlow text-sm leading-relaxed"
+            style={{ color: "rgba(255,255,255,0.5)" }}
+          >
+            La saison 2025/2026 a réuni plus de 120 coureurs passionnés, de tous
+            niveaux, autour d'une même passion : courir ensemble sur les routes
+            et sentiers de Bretagne.
           </p>
         </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-14">
-          {stats.map((stat, i) => (
+        <div
+          style={{
+            padding: "2rem",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "1rem",
+          }}
+        >
+          {bureau.map((member) => (
             <div
-              key={stat.label}
-              className={`bg-fsa-gris-pale rounded-xl p-6 text-center ${
-                i < 2 ? "border-r border-fsa-gris-pale" : ""
-              }`}
+              key={member.initials}
+              style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
             >
-              <span className="font-bebas text-5xl text-fsa-rose block">
-                {stat.num}
-              </span>
-              <span className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mt-1 block">
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Présentation */}
-        <div className="mb-14">
-          <span className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med block mb-4">
-            Présentation
-          </span>
-          <div className="border-l-2 border-fsa-rose pl-6 space-y-3">
-            <p className="font-barlow text-fsa-gris text-base leading-relaxed">
-              Créée à Saint-Aubin-d'Aubigné, l'association Les Foulées
-              Saint-Aubinoises rassemble des coureurs de tous niveaux autour
-              d'une passion commune : la course à pied.
-            </p>
-            <p className="font-barlow text-fsa-gris text-base leading-relaxed">
-              Du 10 km au marathon, sur route ou en trail, nous participons
-              régulièrement à des épreuves locales et régionales. Nos sorties
-              hebdomadaires sont ouvertes à tous, débutants comme confirmés.
-            </p>
-          </div>
-        </div>
-
-        {/* Bureau */}
-        <div className="mb-14">
-          <span className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med block mb-4">
-            Notre bureau
-          </span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {bureau.map((member) => (
               <div
-                key={member.initials}
-                className="border border-fsa-gris-pale rounded-xl p-5 text-center hover:border-fsa-rose transition-colors duration-200"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  background: "rgba(232,24,109,0.15)",
+                  border: "1px solid rgba(232,24,109,0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
               >
-                <div className="w-12 h-12 rounded-full bg-fsa-rose/10 flex items-center justify-center mx-auto mb-3">
-                  <span className="font-barlow-condensed text-fsa-rose font-semibold text-sm">
-                    {member.initials}
-                  </span>
-                </div>
-                <p className="font-barlow font-medium text-fsa-noir text-sm mb-0.5">
+                <span
+                  className="font-barlow-condensed text-xs font-bold"
+                  style={{ color: "#e8186d" }}
+                >
+                  {member.initials}
+                </span>
+              </div>
+              <div>
+                <p
+                  className="font-barlow text-sm font-medium"
+                  style={{ color: "#fff" }}
+                >
                   {member.name}
                 </p>
-                <p className="font-barlow text-fsa-gris-med text-xs">
+                <p
+                  className="font-barlow text-xs"
+                  style={{ color: "rgba(255,255,255,0.4)" }}
+                >
                   {member.role}
                 </p>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Section basse 3 colonnes */}
+      <div
+        className="w-full rounded-2xl"
+        style={{
+          background: "#1a1a1a",
+          padding: "3rem",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "3rem",
+        }}
+      >
+        {/* Colonne 1 — Présentation */}
+        <div>
+          <h2
+            className="font-barlow-condensed uppercase text-xs tracking-widest font-bold"
+            style={{ color: "#ffffff", marginBottom: "1.5rem" }}
+          >
+            Présentation
+          </h2>
+          <div
+            style={{
+              borderLeft: "2px solid #e8186d",
+              paddingLeft: "1.25rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+            }}
+          >
+            <p
+              className="font-barlow text-sm leading-relaxed"
+              style={{ color: "rgba(255,255,255,0.6)" }}
+            >
+              Créée à Saint-Aubin-d'Aubigné en 1998, notre association réunit
+              des passionnés de course à pied, de tous âges et de tous niveaux.
+            </p>
+            <p
+              className="font-barlow text-sm leading-relaxed"
+              style={{ color: "rgba(255,255,255,0.6)" }}
+            >
+              Notre objectif : partager{" "}
+              <strong style={{ color: "#fff" }}>
+                le plaisir de courir ensemble
+              </strong>
+              , se dépasser et représenter fièrement notre commune sur les
+              routes et sentiers de Bretagne.
+            </p>
           </div>
         </div>
 
-        {/* Valeurs */}
-        <div className="mb-14">
-          <span className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med block mb-4">
+        {/* Colonne 2 — Nos valeurs */}
+        <div>
+          <h2
+            className="font-barlow-condensed uppercase text-xs tracking-widest font-bold"
+            style={{ color: "#ffffff", marginBottom: "1.5rem" }}
+          >
             Nos valeurs
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          </h2>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          >
             {valeurs.map((v) => (
               <div
                 key={v.title}
-                className="border border-fsa-gris-pale rounded-xl p-5 flex gap-4 items-start hover:border-fsa-rose transition-colors duration-200"
+                style={{
+                  display: "flex",
+                  gap: "0.875rem",
+                  alignItems: "flex-start",
+                }}
               >
-                <div className="w-10 h-10 rounded-lg bg-fsa-rose/10 flex items-center justify-center flex-shrink-0">
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    background: "rgba(232,24,109,0.15)",
+                    border: "1px solid rgba(232,24,109,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    color: "#e8186d",
+                  }}
+                >
                   {v.icon}
                 </div>
                 <div>
-                  <p className="font-barlow font-medium text-fsa-noir text-sm mb-1">
+                  <p
+                    className="font-barlow-condensed uppercase text-xs tracking-wider font-bold"
+                    style={{ color: "#fff", marginBottom: "0.25rem" }}
+                  >
                     {v.title}
                   </p>
-                  <p className="font-barlow text-fsa-gris-med text-sm leading-relaxed">
+                  <p
+                    className="font-barlow text-xs leading-relaxed"
+                    style={{ color: "rgba(255,255,255,0.5)" }}
+                  >
                     {v.desc}
                   </p>
                 </div>
@@ -169,19 +324,47 @@ export default function LeClubPage() {
           </div>
         </div>
 
-        {/* Timeline */}
+        {/* Colonne 3 — Notre histoire */}
         <div>
-          <span className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med block mb-6">
-            Un peu d'histoire
-          </span>
-          <div className="border-l-2 border-fsa-rose/20 pl-6 space-y-8">
+          <h2
+            className="font-barlow-condensed uppercase text-xs tracking-widest font-bold"
+            style={{ color: "#ffffff", marginBottom: "1.5rem" }}
+          >
+            Notre histoire
+          </h2>
+          <div
+            style={{
+              borderLeft: "2px solid rgba(232,24,109,0.3)",
+              paddingLeft: "1.25rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.25rem",
+            }}
+          >
             {timeline.map((item) => (
-              <div key={item.year} className="relative">
-                <div className="absolute -left-[1.65rem] top-1 w-2.5 h-2.5 rounded-full bg-fsa-rose" />
-                <p className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-rose mb-1">
+              <div key={item.year} style={{ position: "relative" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "-1.625rem",
+                    top: "0.25rem",
+                    width: "10px",
+                    height: "10px",
+                    borderRadius: "50%",
+                    background: "#e8186d",
+                    border: "2px solid #1a1a1a",
+                  }}
+                />
+                <p
+                  className="font-barlow-condensed uppercase text-xs tracking-widest"
+                  style={{ color: "#e8186d", marginBottom: "0.25rem" }}
+                >
                   {item.year}
                 </p>
-                <p className="font-barlow text-fsa-gris text-sm leading-relaxed">
+                <p
+                  className="font-barlow text-xs leading-relaxed"
+                  style={{ color: "rgba(255,255,255,0.5)" }}
+                >
                   {item.text}
                 </p>
               </div>
@@ -189,6 +372,6 @@ export default function LeClubPage() {
           </div>
         </div>
       </div>
-    </PageWrapper>
+    </div>
   );
 }

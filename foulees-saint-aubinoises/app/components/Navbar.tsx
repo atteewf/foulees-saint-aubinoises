@@ -13,7 +13,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto w-full px-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Image
-            src="/foulees/LOGO_FSA_ST_SF.png"
+            src="/foulees/logo_hero.png"
             alt="Logo FSA"
             width={80}
             height={80}
