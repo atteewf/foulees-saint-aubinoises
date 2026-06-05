@@ -1,24 +1,85 @@
 import { Suspense } from "react";
 import { supabase } from "../lib/supabase";
 import { ResultatsList } from "../components/Resultats";
+
 async function ResultsData() {
-  const { data: resultats, error } = await supabase
+  const { data: resultats } = await supabase
     .from("resultats")
-    .select("*");
-  console.log("resultats:", resultats);
-  console.log("error:", error);
+    .select("*")
+    .order("date", { ascending: false });
   return <ResultatsList resultats={resultats ?? []} />;
 }
 
 export default function ResultatPage() {
   return (
-    <div
-      style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
-    >
-      <h1 className="font-bebas text-4xl text-fsa-noir">Resultats</h1>
-      <Suspense fallback={<div>Chargement...</div>}>
-        <ResultsData />
-      </Suspense>
+    <div style={{ width: "100%", background: "#0f0f0f", minHeight: "100vh" }}>
+      {/* Fond dots */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "1024px",
+          margin: "0 auto",
+          padding: "3rem 1.5rem",
+        }}
+      >
+        {/* Header */}
+        <div style={{ marginBottom: "3rem" }}>
+          <p
+            className="font-barlow-condensed uppercase"
+            style={{
+              fontSize: "0.72rem",
+              letterSpacing: "0.12em",
+              color: "#e8186d",
+              marginBottom: "0.5rem",
+            }}
+          >
+            FSA · Saint-Aubin-d'Aubigné
+          </p>
+          <h1
+            className="font-bebas"
+            style={{
+              fontSize: "4rem",
+              color: "#fff",
+              lineHeight: 1,
+              marginBottom: "0.5rem",
+            }}
+          >
+            Résultats
+          </h1>
+          <p
+            className="font-barlow"
+            style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.35)" }}
+          >
+            Performances et classements des membres de l'association.
+          </p>
+        </div>
+
+        <Suspense
+          fallback={
+            <p
+              className="font-barlow"
+              style={{ color: "rgba(255,255,255,0.3)" }}
+            >
+              Chargement...
+            </p>
+          }
+        >
+          <ResultsData />
+        </Suspense>
+      </div>
     </div>
   );
 }

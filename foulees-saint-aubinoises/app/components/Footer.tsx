@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { FaFacebook, FaInstagram, FaStrava } from "react-icons/fa";
@@ -8,71 +9,119 @@ export default function Footer() {
     { href: "/agenda", label: "Agenda" },
     { href: "/galerie", label: "Galerie" },
     { href: "/resultats", label: "Résultats" },
-    { href: "/adhesion", label: "Adhésion" },
     { href: "/contact", label: "Contact" },
   ];
 
   return (
-    <footer className="bg-fsa-noir border-t border-white/10">
-      {/* Partie principale */}
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* Logo + description */}
-        <div className="flex flex-col items-start gap-4">
-          <div className="flex items-center gap-3">
+    <footer
+      style={{
+        background: "#1a1a1a",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
+      <div
+        style={{ maxWidth: "1024px", margin: "0 auto", padding: "2rem 1.5rem" }}
+      >
+        {/* Ligne principale */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+          }}
+        >
+          {/* Logo + nom */}
+          <Link
+            href="/"
+            style={{
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+            }}
+          >
             <Image
-              src="/foulees/LOGO_FSA_ST_SF.png"
+              src="/foulees/logo_fsa_fond_blanc.svg"
               alt="Logo FSA"
-              width={60}
-              height={60}
+              width={40}
+              height={40}
             />
-            <span className="font-bebas text-xl tracking-wide text-white">
-              Foulées <span className="text-fsa-rose">Saint-Aubinoises</span>
+            <span
+              className="font-bebas"
+              style={{
+                fontSize: "1rem",
+                color: "#fff",
+                letterSpacing: "0.05em",
+              }}
+            >
+              Foulées <span style={{ color: "#e8186d" }}>Saint-Aubinoises</span>
             </span>
-          </div>
-          <p className="font-barlow text-white/40 text-sm leading-relaxed">
-            Association de course à pied de Saint-Aubin-d'Aubigné, ouverte à
-            tous niveaux.
-          </p>
-        </div>
+          </Link>
 
-        {/* Liens rapides */}
-        <div>
-          <p className="font-barlow-condensed uppercase text-xs tracking-widest text-white/40 mb-4">
-            Navigation
-          </p>
-          <ul className="space-y-2">
+          {/* Navigation compacte inline */}
+          <nav
+            style={{
+              display: "flex",
+              gap: "1.5rem",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             {liens.map((lien) => (
-              <li key={lien.href}>
-                <Link
-                  href={lien.href}
-                  className="font-barlow text-sm text-white/60 hover:text-fsa-rose transition-colors duration-200"
-                >
-                  {lien.label}
-                </Link>
-              </li>
+              <Link
+                key={lien.href}
+                href={lien.href}
+                className="font-barlow-condensed uppercase"
+                style={{
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.1em",
+                  color: "rgba(255,255,255,0.35)",
+                  textDecoration: "none",
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
+                }
+              >
+                {lien.label}
+              </Link>
             ))}
-          </ul>
-        </div>
+          </nav>
 
-        {/* Contact + réseaux */}
-        <div>
-          <p className="font-barlow-condensed uppercase text-xs tracking-widest text-white/40 mb-4">
-            Nous suivre
-          </p>
-          <div className="flex gap-4 mb-6">
+          {/* Réseaux */}
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
             <Link
-              href="https://facebook.com"
+              href="https://www.facebook.com/fouleessstaubinoises"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/60 hover:text-fsa-rose transition-colors duration-200 text-2xl"
+              style={{
+                color: "rgba(255,255,255,0.35)",
+                fontSize: "1.1rem",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
+              }
             >
               <FaFacebook />
             </Link>
             <Link
-              href="https://instagram.com"
+              href="https://www.instagram.com/foulees_saint_aubinoises"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/60 hover:text-fsa-rose transition-colors duration-200 text-2xl"
+              style={{
+                color: "rgba(255,255,255,0.35)",
+                fontSize: "1.1rem",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
+              }
             >
               <FaInstagram />
             </Link>
@@ -80,26 +129,52 @@ export default function Footer() {
               href="https://strava.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/60 hover:text-fsa-rose transition-colors duration-200 text-2xl"
+              style={{
+                color: "rgba(255,255,255,0.35)",
+                fontSize: "1.1rem",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
+              }
             >
               <FaStrava />
             </Link>
           </div>
-          <p className="font-barlow text-white/40 text-sm">
-            Saint-Aubin-d'Aubigné, Ille-et-Vilaine
-          </p>
         </div>
-      </div>
 
-      {/* Bas de footer */}
-      <div className="border-t border-white/10 py-4 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
-          <p className="font-barlow text-white/30 text-xs">
+        {/* Bas footer */}
+        <div
+          style={{
+            borderTop: "1px solid rgba(255,255,255,0.05)",
+            marginTop: "1.5rem",
+            paddingTop: "1rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "0.5rem",
+          }}
+        >
+          <p
+            className="font-barlow"
+            style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}
+          >
             © 2025 Les Foulées Saint-Aubinoises — Tous droits réservés
           </p>
           <Link
             href="/mentionslegales"
-            className="font-barlow text-white/30 text-xs hover:text-fsa-rose transition-colors duration-200"
+            className="font-barlow"
+            style={{
+              fontSize: "0.7rem",
+              color: "rgba(255,255,255,0.2)",
+              textDecoration: "none",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.color = "rgba(255,255,255,0.2)")
+            }
           >
             Mentions légales
           </Link>

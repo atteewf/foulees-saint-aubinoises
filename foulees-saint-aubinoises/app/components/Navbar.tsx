@@ -7,38 +7,38 @@ import Image from "next/image";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <nav
-      className={`bg-fsa-gris py-4 sticky top-0 z-50 w-full ${isOpen ? "open" : ""}`}
-    >
-      <div className="max-w-7xl mx-auto w-full px-6 flex justify-between items-center">
-        <div className="flex items-center gap-3">
+    <nav className={`bg-fsa-gris py-3 sticky top-0 z-50 w-full`}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "2rem",
+          padding: "0 2rem",
+        }}
+      >
+        {/* Logo */}
+        <Link href="/">
           <Image
             src="/foulees/logo_hero_sansFSA.png"
             alt="Logo FSA"
             width={80}
             height={80}
           />
-          <span className="font-bebas text-2xl tracking-wide text-white">
-            FOULÉES <span className="text-fsa-rose">SAINT-AUBINOISES</span>
-          </span>
-        </div>
+        </Link>
+
+        {/* Burger mobile */}
         <button
           className="block md:hidden text-white"
           onClick={() => setIsOpen(!isOpen)}
         >
           ☰
         </button>
+
+        {/* Liens */}
         <ul
-          className={`${isOpen ? "flex" : "hidden"} md:flex gap-8 items-center`}
+          className={`${isOpen ? "flex" : "hidden"} md:flex gap-6 items-center`}
         >
-          <li>
-            <Link
-              className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
-              href="/"
-            >
-              Accueil
-            </Link>
-          </li>
           <li>
             <Link
               className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
@@ -47,7 +47,6 @@ export default function Navbar() {
               Le Club
             </Link>
           </li>
-
           <li>
             <Link
               className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
@@ -82,10 +81,10 @@ export default function Navbar() {
           </li>
           <li>
             <Link
-              className="font-barlow-condensed uppercase text-sm tracking-widest text-white/60 hover:text-fsa-rose transition-colors duration-200"
+              className="font-barlow-condensed uppercase text-sm tracking-widest text-fsa-rose border border-fsa-rose px-4 py-2 rounded-full hover:bg-fsa-rose hover:text-white transition-colors duration-200"
               href="/escapade"
             >
-              Les Escapades Nocturnes 2026
+              Escapades 2026
             </Link>
           </li>
         </ul>
