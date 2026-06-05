@@ -236,7 +236,8 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
                     className="font-bebas"
                     style={{
                       fontSize: "1.8rem",
-                      color: result.classement <= 3 ? "#e8186d" : "#fff",
+                      color:
+                        Number(result.classement) <= 3 ? "#e8186d" : "#fff",
                       lineHeight: 1,
                     }}
                   >
