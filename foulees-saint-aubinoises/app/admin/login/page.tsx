@@ -26,49 +26,149 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm h-fit">
-      <h2 className="font-bebas text-2xl text-fsa-noir mb-6">
-        FSA — Espace Administration
-      </h2>
+    <div
+      style={{
+        width: "100%",
+        background: "#0f0f0f",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
 
-      <div className="flex flex-col gap-4">
-        <div>
-          <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="votre@email.com"
-            className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-          />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          width: "100%",
+          maxWidth: "420px",
+          padding: "1.5rem",
+        }}
+      >
+        <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+          <p
+            className="font-barlow-condensed uppercase tracking-widest text-xs"
+            style={{ color: "#e8186d", marginBottom: "0.5rem" }}
+          >
+            FSA · Saint-Aubin-d'Aubigné
+          </p>
+          <h1 className="font-bebas text-4xl" style={{ color: "#fff" }}>
+            Espace Administration
+          </h1>
         </div>
 
-        <div>
-          <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-            Mot de passe
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-          />
-        </div>
-
-        {errorMessage && (
-          <p className="text-red-500 text-sm text-center">{errorMessage}</p>
-        )}
-
-        <button
-          onClick={Connection}
-          disabled={loading}
-          className="w-full bg-fsa-rose text-white py-3 rounded-xl font-barlow-condensed uppercase tracking-widest text-sm hover:bg-fsa-rose/90 transition-colors mt-2"
+        <div
+          style={{
+            background: "#1a1a1a",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: "16px",
+            padding: "2rem",
+          }}
         >
-          {loading ? "Connexion en cours..." : "Se connecter"}
-        </button>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          >
+            <div>
+              <label
+                className="font-barlow-condensed uppercase text-xs tracking-widest"
+                style={{
+                  color: "rgba(255,255,255,0.3)",
+                  display: "block",
+                  marginBottom: "0.4rem",
+                }}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="votre@email.com"
+                style={{
+                  width: "100%",
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "10px",
+                  padding: "0.75rem 1rem",
+                  color: "#fff",
+                  fontSize: "0.9rem",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            <div>
+              <label
+                className="font-barlow-condensed uppercase text-xs tracking-widest"
+                style={{
+                  color: "rgba(255,255,255,0.3)",
+                  display: "block",
+                  marginBottom: "0.4rem",
+                }}
+              >
+                Mot de passe
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{
+                  width: "100%",
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "10px",
+                  padding: "0.75rem 1rem",
+                  color: "#fff",
+                  fontSize: "0.9rem",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            {errorMessage && (
+              <p
+                className="font-barlow text-sm text-center"
+                style={{ color: "#ef4444" }}
+              >
+                {errorMessage}
+              </p>
+            )}
+
+            <button
+              onClick={Connection}
+              disabled={loading}
+              className="font-barlow-condensed uppercase tracking-widest text-sm"
+              style={{
+                width: "100%",
+                background: loading ? "rgba(232,24,109,0.5)" : "#e8186d",
+                color: "#fff",
+                border: "none",
+                borderRadius: "999px",
+                padding: "0.75rem 1.5rem",
+                cursor: loading ? "not-allowed" : "pointer",
+                marginTop: "0.5rem",
+              }}
+            >
+              {loading ? "Connexion en cours..." : "Se connecter"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

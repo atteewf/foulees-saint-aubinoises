@@ -3,6 +3,7 @@
 import { Escapade, Escapade_Epreuves, Event } from "../types/database";
 import { supabase } from "../lib/supabase";
 import { useState, useEffect } from "react";
+import { PageHeader } from "./PageHeader";
 
 // ─── Types locaux ─────────────────────────────────────────────────────────────
 
@@ -257,401 +258,780 @@ export function AdminPanelEscapNocturne() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-4">
-          {vue === "edit" && (
+    <div
+      style={{
+        width: "100%",
+        background: "#0f0f0f",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "1024px",
+          margin: "0 auto",
+          padding: "3rem 1.5rem",
+        }}
+      >
+        <PageHeader
+          label="FSA · Administration"
+          title="Escapades Nocturnes"
+          subtitle="Gérer les éditions et épreuves"
+        />
+
+        {/* Header actions */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "2rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            {vue === "edit" && (
+              <button
+                onClick={retourListe}
+                className="font-barlow-condensed uppercase tracking-widest text-xs"
+                style={{
+                  color: "rgba(255,255,255,0.3)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                ← Retour
+              </button>
+            )}
+          </div>
+          {vue === "list" && (
             <button
-              onClick={retourListe}
-              className="text-fsa-gris-med hover:text-fsa-noir transition-colors font-barlow-condensed uppercase tracking-widest text-sm"
+              onClick={ouvrirNouvelle}
+              className="font-barlow-condensed uppercase tracking-widest text-xs"
+              style={{
+                background: "#e8186d",
+                color: "#fff",
+                border: "none",
+                borderRadius: "999px",
+                padding: "0.5rem 1.25rem",
+                cursor: "pointer",
+              }}
             >
-              ← Retour
+              + Nouvelle
             </button>
           )}
-          <h1 className="font-bebas text-4xl text-fsa-noir">
-            {vue === "list"
-              ? "Escapades Nocturnes"
-              : selected
-                ? `Modifier · ${selected.event?.nom ?? selected.edition}`
-                : "Nouvelle Escapade"}
-          </h1>
         </div>
+
+        {/* ── VUE LISTE ── */}
         {vue === "list" && (
-          <button
-            onClick={ouvrirNouvelle}
-            className="bg-fsa-rose text-white px-5 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-fsa-rose/90 transition-colors"
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
           >
-            + Nouvelle
-          </button>
-        )}
-      </div>
-
-      {/* ── VUE LISTE ────────────────────────────────────────────────────── */}
-      {vue === "list" && (
-        <div className="flex flex-col gap-4">
-          {escapades.length === 0 && (
-            <p className="text-fsa-gris-med font-barlow text-center py-12">
-              Aucune escapade nocturne
-            </p>
-          )}
-          {escapades.map((escapade) => (
-            <div
-              key={escapade.id}
-              className="bg-white rounded-2xl px-6 py-4 shadow-sm flex items-center justify-between"
-            >
-              <div>
-                <p className="font-barlow-condensed font-bold text-fsa-noir text-lg">
-                  {escapade.event?.nom ?? "Sans événement"}
-                </p>
-                <p className="font-barlow text-sm text-fsa-gris-med">
-                  {escapade.edition && `Édition ${escapade.edition} · `}
-                  {escapade.epreuves.length} épreuve
-                  {escapade.epreuves.length !== 1 ? "s" : ""}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                {/* Toggle published */}
-                <button
-                  onClick={() => togglePublished(escapade)}
-                  className={`font-barlow-condensed text-xs uppercase tracking-wider px-3 py-1 rounded-full transition-colors ${
-                    escapade.published
-                      ? "bg-green-100 text-green-700"
-                      : "bg-fsa-gris-pale text-fsa-gris-med"
-                  }`}
-                >
-                  {escapade.published ? "Publié" : "Brouillon"}
-                </button>
-                <button
-                  onClick={() => ouvrirEdition(escapade)}
-                  className="bg-fsa-noir text-white px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-fsa-noir/80 transition-colors"
-                >
-                  Modifier
-                </button>
-                <button
-                  onClick={() => supprimerEscapade(escapade)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-red-600 transition-colors"
-                >
-                  Supprimer
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── VUE EDIT ─────────────────────────────────────────────────────── */}
-      {vue === "edit" && (
-        <div className="flex flex-col gap-8">
-          {/* Formulaire escapade */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <h2 className="font-bebas text-2xl text-fsa-noir mb-6">
-              Informations générales
-            </h2>
-            <div className="flex flex-col gap-4">
-              {/* Liaison event */}
-              {!selected && (
-                <div>
-                  <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-2 block">
-                    Événement associé
-                  </label>
-                  <div className="flex gap-3 mb-3">
-                    <button
-                      onClick={() => setModeEvent("existant")}
-                      className={`px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider transition-colors ${
-                        modeEvent === "existant"
-                          ? "bg-fsa-rose text-white"
-                          : "border border-fsa-gris-pale text-fsa-gris-med"
-                      }`}
-                    >
-                      Event existant
-                    </button>
-                    <button
-                      onClick={() => setModeEvent("nouveau")}
-                      className={`px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider transition-colors ${
-                        modeEvent === "nouveau"
-                          ? "bg-fsa-rose text-white"
-                          : "border border-fsa-gris-pale text-fsa-gris-med"
-                      }`}
-                    >
-                      Créer un event
-                    </button>
-                  </div>
-
-                  {modeEvent === "existant" ? (
-                    <select
-                      value={eventId}
-                      onChange={(e) => setEventId(e.target.value)}
-                      className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir focus:outline-none focus:border-fsa-rose transition-colors"
-                    >
-                      <option value="">Sélectionner un événement</option>
-                      {events.map((event) => (
-                        <option key={event.id} value={event.id}>
-                          {event.nom} —{" "}
-                          {new Date(event.date).toLocaleDateString("fr-FR")}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        value={nouveauEventNom}
-                        onChange={(e) => setNouveauEventNom(e.target.value)}
-                        placeholder="Nom de l'événement"
-                        className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                      />
-                      <input
-                        type="date"
-                        value={nouveauEventDate}
-                        onChange={(e) => setNouveauEventDate(e.target.value)}
-                        className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir focus:outline-none focus:border-fsa-rose transition-colors"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Édition */}
-              <div>
-                <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                  Édition
-                </label>
-                <input
-                  type="text"
-                  value={edition}
-                  onChange={(e) => setEdition(e.target.value)}
-                  placeholder="ex: 2026"
-                  className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                />
-              </div>
-
-              {/* Lien inscriptions */}
-              <div>
-                <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                  Lien inscriptions (Klikego)
-                </label>
-                <input
-                  type="text"
-                  value={inscriptionsUrl}
-                  onChange={(e) => setInscriptionsUrl(e.target.value)}
-                  placeholder="https://www.klikego.com/..."
-                  className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                />
-              </div>
-
-              {/* Association solidarité */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                    Association solidarité
-                  </label>
-                  <input
-                    type="text"
-                    value={associationSolidarite}
-                    onChange={(e) => setAssociationSolidarite(e.target.value)}
-                    placeholder="ex: SOS Préma"
-                    className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                    Lien association
-                  </label>
-                  <input
-                    type="text"
-                    value={associationUrl}
-                    onChange={(e) => setAssociationUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                  />
-                </div>
-              </div>
-
-              {/* Published */}
-              <div className="flex items-center gap-3 mt-2">
-                <input
-                  type="checkbox"
-                  id="published"
-                  checked={published}
-                  onChange={(e) => setPublished(e.target.checked)}
-                  className="w-4 h-4 accent-fsa-rose"
-                />
-                <label
-                  htmlFor="published"
-                  className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med cursor-pointer"
-                >
-                  Publier sur le site
-                </label>
-              </div>
-
-              <button
-                onClick={handleSubmitEscapade}
-                className="bg-fsa-rose text-white py-3 rounded-xl font-barlow-condensed uppercase tracking-widest text-sm hover:bg-fsa-rose/90 transition-colors mt-2"
+            {escapades.length === 0 && (
+              <p
+                className="font-barlow text-center"
+                style={{ color: "rgba(255,255,255,0.3)", padding: "3rem 0" }}
               >
-                {selected ? "Mettre à jour" : "Créer l'escapade"}
-              </button>
-            </div>
-          </div>
-
-          {/* Épreuves — uniquement si escapade existante */}
-          {selected && (
-            <div className="bg-white rounded-2xl p-8 shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="font-bebas text-2xl text-fsa-noir">Épreuves</h2>
-                <button
-                  onClick={() => {
-                    resetFormEpreuve();
-                    setShowEpreuveForm(true);
-                  }}
-                  className="bg-fsa-rose text-white px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-fsa-rose/90 transition-colors"
-                >
-                  + Ajouter
-                </button>
-              </div>
-
-              {/* Liste épreuves */}
-              <div className="flex flex-col gap-3 mb-6">
-                {selected.epreuves.length === 0 && (
-                  <p className="text-fsa-gris-med font-barlow text-sm">
-                    Aucune épreuve
-                  </p>
-                )}
-                {selected.epreuves.map((epreuve) => (
-                  <div
-                    key={epreuve.id}
-                    className="flex items-center justify-between border border-fsa-gris-pale rounded-xl px-5 py-3"
+                Aucune escapade nocturne
+              </p>
+            )}
+            {escapades.map((escapade) => (
+              <div
+                key={escapade.id}
+                style={{
+                  background: "#1a1a1a",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "16px",
+                  padding: "1.25rem 1.75rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "1rem",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <p
+                    className="font-barlow-condensed font-bold text-sm"
+                    style={{ color: "#fff", marginBottom: "0.2rem" }}
                   >
-                    <div>
-                      <p className="font-barlow-condensed font-bold text-fsa-noir">
-                        {epreuve.titre}
-                      </p>
-                      <p className="font-barlow text-sm text-fsa-gris-med">
-                        {epreuve.distance && `${epreuve.distance} · `}
-                        {epreuve.heure_depart &&
-                          `Départ ${epreuve.heure_depart} · `}
-                        {epreuve.tarif}
-                      </p>
+                    {escapade.event?.nom ?? "Sans événement"}
+                  </p>
+                  <p
+                    className="font-barlow text-xs"
+                    style={{ color: "rgba(255,255,255,0.3)" }}
+                  >
+                    {escapade.edition && `Édition ${escapade.edition} · `}
+                    {escapade.epreuves.length} épreuve
+                    {escapade.epreuves.length !== 1 ? "s" : ""}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <button
+                    onClick={() => togglePublished(escapade)}
+                    className="font-barlow-condensed uppercase text-xs"
+                    style={{
+                      background: escapade.published
+                        ? "rgba(34,197,94,0.1)"
+                        : "rgba(255,255,255,0.05)",
+                      border: escapade.published
+                        ? "1px solid rgba(34,197,94,0.3)"
+                        : "1px solid rgba(255,255,255,0.1)",
+                      color: escapade.published
+                        ? "#22c55e"
+                        : "rgba(255,255,255,0.3)",
+                      padding: "0.3rem 0.75rem",
+                      borderRadius: "999px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {escapade.published ? "Publié" : "Brouillon"}
+                  </button>
+                  <button
+                    onClick={() => ouvrirEdition(escapade)}
+                    className="font-barlow-condensed uppercase tracking-wider text-xs"
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "#fff",
+                      padding: "0.4rem 0.9rem",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    onClick={() => supprimerEscapade(escapade)}
+                    className="font-barlow-condensed uppercase tracking-wider text-xs"
+                    style={{
+                      background: "rgba(239,68,68,0.1)",
+                      border: "1px solid rgba(239,68,68,0.2)",
+                      color: "#ef4444",
+                      padding: "0.4rem 0.9rem",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Suppr.
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── VUE EDIT ── */}
+        {vue === "edit" && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+          >
+            {/* Formulaire escapade */}
+            <div
+              style={{
+                background: "#1a1a1a",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderRadius: "16px",
+                padding: "1.75rem",
+              }}
+            >
+              <h2
+                className="font-bebas text-2xl"
+                style={{ color: "#fff", marginBottom: "1.5rem" }}
+              >
+                Informations générales
+              </h2>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1.25rem",
+                }}
+              >
+                {!selected && (
+                  <div>
+                    <label
+                      className="font-barlow-condensed uppercase text-xs tracking-widest"
+                      style={{
+                        color: "rgba(255,255,255,0.3)",
+                        display: "block",
+                        marginBottom: "0.75rem",
+                      }}
+                    >
+                      Événement associé
+                    </label>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        marginBottom: "1rem",
+                      }}
+                    >
+                      {(["existant", "nouveau"] as const).map((m) => (
+                        <button
+                          key={m}
+                          onClick={() => setModeEvent(m)}
+                          className="font-barlow-condensed uppercase text-xs"
+                          style={{
+                            padding: "0.4rem 1rem",
+                            borderRadius: "999px",
+                            border:
+                              modeEvent === m
+                                ? "1px solid #e8186d"
+                                : "1px solid rgba(255,255,255,0.1)",
+                            background:
+                              modeEvent === m ? "#e8186d" : "transparent",
+                            color:
+                              modeEvent === m
+                                ? "#fff"
+                                : "rgba(255,255,255,0.4)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {m === "existant"
+                            ? "Event existant"
+                            : "Créer un event"}
+                        </button>
+                      ))}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => toggleComplet(epreuve)}
-                        className={`font-barlow-condensed text-xs uppercase tracking-wider px-3 py-1 rounded-full transition-colors ${
-                          epreuve.complet
-                            ? "bg-fsa-gris-pale text-fsa-gris-med"
-                            : "bg-green-100 text-green-700"
-                        }`}
+                    {modeEvent === "existant" ? (
+                      <select
+                        value={eventId}
+                        onChange={(e) => setEventId(e.target.value)}
+                        style={{
+                          width: "100%",
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "10px",
+                          padding: "0.75rem 1rem",
+                          color: "#fff",
+                          fontSize: "0.9rem",
+                          outline: "none",
+                          boxSizing: "border-box",
+                        }}
                       >
-                        {epreuve.complet ? "Complet" : "Ouvert"}
-                      </button>
-                      <button
-                        onClick={() => editerEpreuve(epreuve)}
-                        className="bg-fsa-noir text-white px-3 py-1 rounded-lg text-xs font-barlow-condensed uppercase tracking-wider hover:bg-fsa-noir/80 transition-colors"
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        onClick={() => supprimerEpreuve(epreuve.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-barlow-condensed uppercase tracking-wider hover:bg-red-600 transition-colors"
-                      >
-                        Supprimer
-                      </button>
-                    </div>
+                        <option value="" style={{ background: "#1a1a1a" }}>
+                          Sélectionner un événement
+                        </option>
+                        {events.map((event) => (
+                          <option
+                            key={event.id}
+                            value={event.id}
+                            style={{ background: "#1a1a1a" }}
+                          >
+                            {event.nom} —{" "}
+                            {new Date(event.date).toLocaleDateString("fr-FR")}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                          {
+                            value: nouveauEventNom,
+                            setter: setNouveauEventNom,
+                            placeholder: "Nom de l'événement",
+                            type: "text",
+                          },
+                          {
+                            value: nouveauEventDate,
+                            setter: setNouveauEventDate,
+                            placeholder: "",
+                            type: "date",
+                          },
+                        ].map((f, i) => (
+                          <input
+                            key={i}
+                            type={f.type}
+                            value={f.value}
+                            onChange={(e) => f.setter(e.target.value)}
+                            placeholder={f.placeholder}
+                            style={{
+                              width: "100%",
+                              background: "rgba(255,255,255,0.04)",
+                              border: "1px solid rgba(255,255,255,0.1)",
+                              borderRadius: "10px",
+                              padding: "0.75rem 1rem",
+                              color: "#fff",
+                              fontSize: "0.9rem",
+                              outline: "none",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {[
+                  {
+                    label: "Édition",
+                    value: edition,
+                    setter: setEdition,
+                    placeholder: "ex: 2026",
+                  },
+                  {
+                    label: "Lien inscriptions (Klikego)",
+                    value: inscriptionsUrl,
+                    setter: setInscriptionsUrl,
+                    placeholder: "https://www.klikego.com/...",
+                  },
+                ].map((f) => (
+                  <div key={f.label}>
+                    <label
+                      className="font-barlow-condensed uppercase text-xs tracking-widest"
+                      style={{
+                        color: "rgba(255,255,255,0.3)",
+                        display: "block",
+                        marginBottom: "0.4rem",
+                      }}
+                    >
+                      {f.label}
+                    </label>
+                    <input
+                      type="text"
+                      value={f.value}
+                      onChange={(e) => f.setter(e.target.value)}
+                      placeholder={f.placeholder}
+                      style={{
+                        width: "100%",
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "10px",
+                        padding: "0.75rem 1rem",
+                        color: "#fff",
+                        fontSize: "0.9rem",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
                   </div>
                 ))}
-              </div>
 
-              {/* Formulaire épreuve */}
-              {showEpreuveForm && (
-                <div className="border border-fsa-rose/30 rounded-xl p-6 bg-fsa-rose/5">
-                  <h3 className="font-bebas text-xl text-fsa-noir mb-4">
-                    {epreuveId ? "Modifier l'épreuve" : "Nouvelle épreuve"}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                      <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                        Titre *
-                      </label>
-                      <input
-                        type="text"
-                        value={eTitre}
-                        onChange={(e) => setETitre(e.target.value)}
-                        placeholder="ex: L'Escapade"
-                        className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                        Distance
-                      </label>
-                      <input
-                        type="text"
-                        value={eDistance}
-                        onChange={(e) => setEDistance(e.target.value)}
-                        placeholder="ex: 12 km"
-                        className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                        Heure départ
-                      </label>
-                      <input
-                        type="text"
-                        value={eHeure}
-                        onChange={(e) => setEHeure(e.target.value)}
-                        placeholder="ex: 18h00"
-                        className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                        Tarif
-                      </label>
-                      <input
-                        type="text"
-                        value={eTarif}
-                        onChange={(e) => setETarif(e.target.value)}
-                        placeholder="ex: Adultes / Gratuit"
-                        className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors bg-white"
-                      />
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        id="complet"
-                        checked={eComplet}
-                        onChange={(e) => setEComplet(e.target.checked)}
-                        className="w-4 h-4 accent-fsa-rose"
-                      />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    {
+                      label: "Association solidarité",
+                      value: associationSolidarite,
+                      setter: setAssociationSolidarite,
+                      placeholder: "ex: SOS Préma",
+                    },
+                    {
+                      label: "Lien association",
+                      value: associationUrl,
+                      setter: setAssociationUrl,
+                      placeholder: "https://...",
+                    },
+                  ].map((f) => (
+                    <div key={f.label}>
                       <label
-                        htmlFor="complet"
-                        className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med cursor-pointer"
+                        className="font-barlow-condensed uppercase text-xs tracking-widest"
+                        style={{
+                          color: "rgba(255,255,255,0.3)",
+                          display: "block",
+                          marginBottom: "0.4rem",
+                        }}
                       >
-                        Complet
+                        {f.label}
                       </label>
+                      <input
+                        type="text"
+                        value={f.value}
+                        onChange={(e) => f.setter(e.target.value)}
+                        placeholder={f.placeholder}
+                        style={{
+                          width: "100%",
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "10px",
+                          padding: "0.75rem 1rem",
+                          color: "#fff",
+                          fontSize: "0.9rem",
+                          outline: "none",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    id="published"
+                    checked={published}
+                    onChange={(e) => setPublished(e.target.checked)}
+                    className="w-4 h-4 accent-fsa-rose"
+                  />
+                  <label
+                    htmlFor="published"
+                    className="font-barlow-condensed uppercase text-xs tracking-widest"
+                    style={{
+                      color: "rgba(255,255,255,0.3)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Publier sur le site
+                  </label>
+                </div>
+
+                <button
+                  onClick={handleSubmitEscapade}
+                  className="font-barlow-condensed uppercase tracking-widest text-sm"
+                  style={{
+                    background: "#e8186d",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "999px",
+                    padding: "0.75rem 1.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  {selected ? "Mettre à jour" : "Créer l'escapade"}
+                </button>
+              </div>
+            </div>
+
+            {/* Épreuves */}
+            {selected && (
+              <div
+                style={{
+                  background: "#1a1a1a",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "16px",
+                  padding: "1.75rem",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  <h2 className="font-bebas text-2xl" style={{ color: "#fff" }}>
+                    Épreuves
+                  </h2>
+                  <button
+                    onClick={() => {
+                      resetFormEpreuve();
+                      setShowEpreuveForm(true);
+                    }}
+                    className="font-barlow-condensed uppercase text-xs"
+                    style={{
+                      background: "#e8186d",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "999px",
+                      padding: "0.5rem 1.25rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    + Ajouter
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  {selected.epreuves.length === 0 && (
+                    <p
+                      className="font-barlow text-xs"
+                      style={{ color: "rgba(255,255,255,0.3)" }}
+                    >
+                      Aucune épreuve
+                    </p>
+                  )}
+                  {selected.epreuves.map((epreuve) => (
+                    <div
+                      key={epreuve.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        border: "1px solid rgba(255,255,255,0.07)",
+                        borderRadius: "12px",
+                        padding: "1rem 1.25rem",
+                        flexWrap: "wrap",
+                        gap: "0.75rem",
+                      }}
+                    >
+                      <div>
+                        <p
+                          className="font-barlow-condensed font-bold text-sm"
+                          style={{ color: "#fff" }}
+                        >
+                          {epreuve.titre}
+                        </p>
+                        <p
+                          className="font-barlow text-xs"
+                          style={{ color: "rgba(255,255,255,0.3)" }}
+                        >
+                          {epreuve.distance && `${epreuve.distance} · `}
+                          {epreuve.heure_depart &&
+                            `Départ ${epreuve.heure_depart} · `}
+                          {epreuve.tarif}
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "0.5rem",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <button
+                          onClick={() => toggleComplet(epreuve)}
+                          className="font-barlow-condensed uppercase text-xs"
+                          style={{
+                            background: epreuve.complet
+                              ? "rgba(255,255,255,0.05)"
+                              : "rgba(34,197,94,0.1)",
+                            border: epreuve.complet
+                              ? "1px solid rgba(255,255,255,0.1)"
+                              : "1px solid rgba(34,197,94,0.3)",
+                            color: epreuve.complet
+                              ? "rgba(255,255,255,0.3)"
+                              : "#22c55e",
+                            padding: "0.3rem 0.75rem",
+                            borderRadius: "999px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {epreuve.complet ? "Complet" : "Ouvert"}
+                        </button>
+                        <button
+                          onClick={() => editerEpreuve(epreuve)}
+                          className="font-barlow-condensed uppercase text-xs"
+                          style={{
+                            background: "rgba(255,255,255,0.06)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            color: "#fff",
+                            padding: "0.3rem 0.75rem",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          onClick={() => supprimerEpreuve(epreuve.id)}
+                          className="font-barlow-condensed uppercase text-xs"
+                          style={{
+                            background: "rgba(239,68,68,0.1)",
+                            border: "1px solid rgba(239,68,68,0.2)",
+                            color: "#ef4444",
+                            padding: "0.3rem 0.75rem",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Suppr.
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {showEpreuveForm && (
+                  <div
+                    style={{
+                      background: "rgba(232,24,109,0.05)",
+                      border: "1px solid rgba(232,24,109,0.2)",
+                      borderRadius: "12px",
+                      padding: "1.5rem",
+                    }}
+                  >
+                    <h3
+                      className="font-bebas text-xl"
+                      style={{ color: "#fff", marginBottom: "1rem" }}
+                    >
+                      {epreuveId ? "Modifier l'épreuve" : "Nouvelle épreuve"}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <label
+                          className="font-barlow-condensed uppercase text-xs tracking-widest"
+                          style={{
+                            color: "rgba(255,255,255,0.3)",
+                            display: "block",
+                            marginBottom: "0.4rem",
+                          }}
+                        >
+                          Titre *
+                        </label>
+                        <input
+                          type="text"
+                          value={eTitre}
+                          onChange={(e) => setETitre(e.target.value)}
+                          placeholder="ex: L'Escapade"
+                          style={{
+                            width: "100%",
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "10px",
+                            padding: "0.75rem 1rem",
+                            color: "#fff",
+                            fontSize: "0.9rem",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                      {[
+                        {
+                          label: "Distance",
+                          value: eDistance,
+                          setter: setEDistance,
+                          placeholder: "ex: 12 km",
+                        },
+                        {
+                          label: "Heure départ",
+                          value: eHeure,
+                          setter: setEHeure,
+                          placeholder: "ex: 18h00",
+                        },
+                        {
+                          label: "Tarif",
+                          value: eTarif,
+                          setter: setETarif,
+                          placeholder: "ex: Adultes / Gratuit",
+                        },
+                      ].map((f) => (
+                        <div key={f.label}>
+                          <label
+                            className="font-barlow-condensed uppercase text-xs tracking-widest"
+                            style={{
+                              color: "rgba(255,255,255,0.3)",
+                              display: "block",
+                              marginBottom: "0.4rem",
+                            }}
+                          >
+                            {f.label}
+                          </label>
+                          <input
+                            type="text"
+                            value={f.value}
+                            onChange={(e) => f.setter(e.target.value)}
+                            placeholder={f.placeholder}
+                            style={{
+                              width: "100%",
+                              background: "rgba(255,255,255,0.04)",
+                              border: "1px solid rgba(255,255,255,0.1)",
+                              borderRadius: "10px",
+                              padding: "0.75rem 1rem",
+                              color: "#fff",
+                              fontSize: "0.9rem",
+                              outline: "none",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                        </div>
+                      ))}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.75rem",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          id="complet"
+                          checked={eComplet}
+                          onChange={(e) => setEComplet(e.target.checked)}
+                          className="w-4 h-4 accent-fsa-rose"
+                        />
+                        <label
+                          htmlFor="complet"
+                          className="font-barlow-condensed uppercase text-xs tracking-widest"
+                          style={{
+                            color: "rgba(255,255,255,0.3)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Complet
+                        </label>
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.75rem",
+                        marginTop: "1rem",
+                      }}
+                    >
+                      <button
+                        onClick={handleSubmitEpreuve}
+                        className="font-barlow-condensed uppercase tracking-widest text-sm"
+                        style={{
+                          flex: 1,
+                          background: "#e8186d",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "999px",
+                          padding: "0.75rem 1.5rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {epreuveId ? "Mettre à jour" : "Ajouter"}
+                      </button>
+                      <button
+                        onClick={resetFormEpreuve}
+                        className="font-barlow-condensed uppercase tracking-widest text-sm"
+                        style={{
+                          background: "none",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          color: "rgba(255,255,255,0.4)",
+                          borderRadius: "999px",
+                          padding: "0.75rem 1.5rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Annuler
+                      </button>
                     </div>
                   </div>
-                  <div className="flex gap-3 mt-4">
-                    <button
-                      onClick={handleSubmitEpreuve}
-                      className="flex-1 bg-fsa-rose text-white py-3 rounded-xl font-barlow-condensed uppercase tracking-widest text-sm hover:bg-fsa-rose/90 transition-colors"
-                    >
-                      {epreuveId ? "Mettre à jour" : "Ajouter"}
-                    </button>
-                    <button
-                      onClick={resetFormEpreuve}
-                      className="px-6 border border-fsa-gris-pale text-fsa-gris-med py-3 rounded-xl font-barlow-condensed uppercase tracking-widest text-sm hover:border-fsa-noir transition-colors"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

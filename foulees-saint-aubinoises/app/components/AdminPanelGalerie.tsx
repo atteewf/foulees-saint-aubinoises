@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Event } from "../types/database";
 import { Photos } from "../types/database";
+import { PageHeader } from "./PageHeader";
 
 type EventWithCount = Event & { photoCount?: number };
 // ─── Composant principal ─────────────────────────────────────────────────────
@@ -179,261 +180,578 @@ export function AdminPanelGalerie() {
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────
-
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-4">
-          {vue === "photos" && (
-            <button
-              onClick={retourEvents}
-              className="text-fsa-gris-med hover:text-fsa-noir transition-colors font-barlow-condensed uppercase tracking-widest text-sm"
-            >
-              ← Retour
-            </button>
-          )}
-          <h1 className="font-bebas text-4xl text-fsa-noir">
-            {vue === "events"
-              ? "Galerie — Événements"
-              : `Photos · ${selectedEvent?.nom}`}
-          </h1>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="text-sm text-fsa-gris-med hover:text-red-500 transition-colors font-barlow-condensed uppercase tracking-widest"
-        >
-          Déconnexion
-        </button>
-      </div>
+    <div
+      style={{
+        width: "100%",
+        background: "#0f0f0f",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
 
-      {/* ── VUE EVENTS ────────────────────────────────────────────────────── */}
-      {vue === "events" && (
-        <div className="flex flex-col gap-3">
-          {events.length === 0 && (
-            <p className="text-fsa-gris-med font-barlow text-center py-12">
-              Aucun événement
-            </p>
-          )}
-          {events.map((event) => (
-            <div
-              key={event.id}
-              className="bg-white rounded-2xl px-6 py-4 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow"
-            >
-              {/* Infos event */}
-              <div className="flex items-center gap-4">
-                <div className="bg-fsa-rose/10 rounded-xl px-4 py-2 text-center min-w-[60px]">
-                  <div className="font-bebas text-2xl text-fsa-rose leading-none">
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "1024px",
+          margin: "0 auto",
+          padding: "3rem 1.5rem",
+        }}
+      >
+        <PageHeader
+          label="FSA · Administration"
+          title="Galerie"
+          subtitle={
+            vue === "events"
+              ? "Gérer les photos par événement"
+              : `Photos · ${selectedEvent?.nom}`
+          }
+        />
+
+        {/* Header actions */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "2rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            {vue === "photos" && (
+              <button
+                onClick={retourEvents}
+                className="font-barlow-condensed uppercase tracking-widest text-xs"
+                style={{
+                  color: "rgba(255,255,255,0.3)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                ← Retour
+              </button>
+            )}
+          </div>
+          <button
+            onClick={handleLogout}
+            className="font-barlow-condensed uppercase tracking-widest text-xs"
+            style={{
+              color: "rgba(255,255,255,0.3)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Déconnexion
+          </button>
+        </div>
+
+        {/* ── VUE EVENTS ── */}
+        {vue === "events" && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+          >
+            {events.length === 0 && (
+              <p
+                className="font-barlow text-center"
+                style={{ color: "rgba(255,255,255,0.3)", padding: "3rem 0" }}
+              >
+                Aucun événement
+              </p>
+            )}
+            {events.map((event) => (
+              <div
+                key={event.id}
+                style={{
+                  background: "#1a1a1a",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "16px",
+                  padding: "1rem 1.75rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  flexWrap: "wrap",
+                }}
+              >
+                {/* Date bloc */}
+                <div
+                  style={{
+                    background: "rgba(232,24,109,0.1)",
+                    borderRadius: "10px",
+                    padding: "0.5rem 0.75rem",
+                    textAlign: "center",
+                    minWidth: "52px",
+                    flexShrink: 0,
+                  }}
+                >
+                  <div
+                    className="font-bebas text-2xl leading-none"
+                    style={{ color: "#e8186d" }}
+                  >
                     {new Date(event.date).getDate()}
                   </div>
-                  <div className="font-barlow-condensed text-xs text-fsa-rose/70 uppercase tracking-wider">
+                  <div
+                    className="font-barlow-condensed uppercase text-xs"
+                    style={{ color: "rgba(232,24,109,0.7)" }}
+                  >
                     {new Date(event.date).toLocaleDateString("fr-FR", {
                       month: "short",
                       year: "2-digit",
                     })}
                   </div>
                 </div>
-                <div>
-                  <p className="font-barlow-condensed font-bold text-fsa-noir text-lg leading-tight">
+
+                {/* Infos */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p
+                    className="font-barlow-condensed font-bold text-sm"
+                    style={{ color: "#fff", marginBottom: "0.2rem" }}
+                  >
                     {event.nom}
                   </p>
-                  <p className="font-barlow text-sm text-fsa-gris-med">
+                  <p
+                    className="font-barlow text-xs"
+                    style={{ color: "rgba(255,255,255,0.3)" }}
+                  >
                     {event.lieu ?? "Lieu non précisé"}
                   </p>
                 </div>
-              </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-3">
-                {/* Badge photos */}
-                <span
-                  className={`font-barlow-condensed text-xs uppercase tracking-wider px-3 py-1 rounded-full ${
-                    (event.photoCount ?? 0) > 0
-                      ? "bg-fsa-rose text-white"
-                      : "bg-fsa-gris-pale text-fsa-gris-med"
-                  }`}
-                >
-                  {event.photoCount ?? 0} photo
-                  {(event.photoCount ?? 0) !== 1 ? "s" : ""}
-                </span>
-
-                <button
-                  onClick={() => ouvrirEvent(event)}
-                  className="bg-fsa-noir text-white px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-fsa-noir/80 transition-colors"
-                >
-                  Gérer
-                </button>
-
-                <button
-                  onClick={() => supprimerEvent(event)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-red-600 transition-colors"
-                >
-                  Supprimer
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── VUE PHOTOS ────────────────────────────────────────────────────── */}
-      {vue === "photos" && (
-        <div>
-          {/* Barre d'actions */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={toutSelectionner}
-                className="border border-fsa-gris-pale text-fsa-gris-med px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:border-fsa-noir transition-colors"
-              >
-                {selectedIds.size === photos.length && photos.length > 0
-                  ? "Tout désélectionner"
-                  : "Tout sélectionner"}
-              </button>
-
-              {selectedIds.size > 0 && (
-                <button
-                  onClick={supprimerSelection}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-red-600 transition-colors"
-                >
-                  Supprimer ({selectedIds.size})
-                </button>
-              )}
-            </div>
-
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="bg-fsa-rose text-white px-5 py-2 rounded-lg text-sm font-barlow-condensed uppercase tracking-wider hover:bg-fsa-rose/90 transition-colors"
-            >
-              {showForm ? "Annuler" : "+ Ajouter une photo"}
-            </button>
-          </div>
-
-          {/* Formulaire ajout */}
-          {showForm && (
-            <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
-              <h2 className="font-bebas text-xl text-fsa-noir mb-4">
-                Ajouter une photo
-              </h2>
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                    URL de la photo *
-                  </label>
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://res.cloudinary.com/..."
-                    className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                      Nom
-                    </label>
-                    <input
-                      type="text"
-                      value={nom}
-                      onChange={(e) => setNom(e.target.value)}
-                      placeholder="Nom de la photo"
-                      className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir focus:outline-none focus:border-fsa-rose transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                      Lieu
-                    </label>
-                    <input
-                      type="text"
-                      value={lieu}
-                      onChange={(e) => setLieu(e.target.value)}
-                      placeholder="Lieu"
-                      className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir placeholder:text-fsa-gris-med/50 focus:outline-none focus:border-fsa-rose transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-barlow-condensed uppercase text-xs tracking-widest text-fsa-gris-med mb-1 block">
-                      Catégorie
-                    </label>
-                    <select
-                      value={categorie}
-                      onChange={(e) => setCategorie(e.target.value)}
-                      className="w-full border border-fsa-gris-pale rounded-xl px-4 py-3 font-barlow text-fsa-noir focus:outline-none focus:border-fsa-rose transition-colors"
-                    >
-                      <option value="">Sélectionner</option>
-                      <option value="trail">Trail</option>
-                      <option value="route">Route</option>
-                      <option value="cross">Cross</option>
-                    </select>
-                  </div>
-                </div>
-                <button
-                  onClick={handleSubmit}
-                  className="bg-fsa-rose text-white py-3 rounded-xl font-barlow-condensed uppercase tracking-widest text-sm hover:bg-fsa-rose/90 transition-colors"
-                >
-                  Ajouter
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Grille photos */}
-          {photos.length === 0 ? (
-            <p className="text-fsa-gris-med font-barlow text-center py-12">
-              Aucune photo pour cet événement
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {photos.map((photo) => (
+                {/* Actions */}
                 <div
-                  key={photo.id}
-                  onClick={() => toggleSelect(photo.id)}
-                  className={`relative rounded-xl overflow-hidden aspect-square cursor-pointer transition-all duration-200 ${
-                    selectedIds.has(photo.id)
-                      ? "ring-4 ring-fsa-rose scale-95"
-                      : "hover:scale-[1.02]"
-                  }`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    flexWrap: "wrap",
+                  }}
                 >
-                  <img
-                    src={photo.url}
-                    alt={photo.nom ?? "photo"}
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Overlay sélection */}
-                  {selectedIds.has(photo.id) && (
-                    <div className="absolute inset-0 bg-fsa-rose/30 flex items-center justify-center">
-                      <div className="bg-fsa-rose rounded-full w-8 h-8 flex items-center justify-center">
-                        <span className="text-white text-lg font-bold">✓</span>
-                      </div>
-                    </div>
-                  )}
-                  {/* Nom au survol */}
-                  {photo.nom && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 hover:opacity-100 transition-opacity">
-                      <p className="text-white text-xs font-barlow-condensed truncate">
-                        {photo.nom}
-                      </p>
-                    </div>
-                  )}
+                  <span
+                    className="font-barlow-condensed uppercase text-xs"
+                    style={{
+                      background:
+                        (event.photoCount ?? 0) > 0
+                          ? "rgba(232,24,109,0.1)"
+                          : "rgba(255,255,255,0.05)",
+                      border:
+                        (event.photoCount ?? 0) > 0
+                          ? "1px solid rgba(232,24,109,0.2)"
+                          : "1px solid rgba(255,255,255,0.1)",
+                      color:
+                        (event.photoCount ?? 0) > 0
+                          ? "#e8186d"
+                          : "rgba(255,255,255,0.3)",
+                      padding: "0.3rem 0.75rem",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    {event.photoCount ?? 0} photo
+                    {(event.photoCount ?? 0) !== 1 ? "s" : ""}
+                  </span>
+                  <button
+                    onClick={() => ouvrirEvent(event)}
+                    className="font-barlow-condensed uppercase tracking-wider text-xs"
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "#fff",
+                      padding: "0.4rem 0.9rem",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Gérer
+                  </button>
+                  <button
+                    onClick={() => supprimerEvent(event)}
+                    className="font-barlow-condensed uppercase tracking-wider text-xs"
+                    style={{
+                      background: "rgba(239,68,68,0.1)",
+                      border: "1px solid rgba(239,68,68,0.2)",
+                      color: "#ef4444",
+                      padding: "0.4rem 0.9rem",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Suppr.
+                  </button>
                 </div>
-              ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── VUE PHOTOS ── */}
+        {vue === "photos" && (
+          <div>
+            {/* Barre d'actions */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "1.5rem",
+                flexWrap: "wrap",
+                gap: "0.75rem",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              >
+                <button
+                  onClick={toutSelectionner}
+                  className="font-barlow-condensed uppercase text-xs"
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "rgba(255,255,255,0.4)",
+                    padding: "0.4rem 0.9rem",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {selectedIds.size === photos.length && photos.length > 0
+                    ? "Tout désélectionner"
+                    : "Tout sélectionner"}
+                </button>
+                {selectedIds.size > 0 && (
+                  <button
+                    onClick={supprimerSelection}
+                    className="font-barlow-condensed uppercase text-xs"
+                    style={{
+                      background: "rgba(239,68,68,0.1)",
+                      border: "1px solid rgba(239,68,68,0.2)",
+                      color: "#ef4444",
+                      padding: "0.4rem 0.9rem",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Supprimer ({selectedIds.size})
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="font-barlow-condensed uppercase text-xs"
+                style={{
+                  background: showForm ? "rgba(255,255,255,0.06)" : "#e8186d",
+                  border: showForm ? "1px solid rgba(255,255,255,0.1)" : "none",
+                  color: "#fff",
+                  padding: "0.4rem 1.25rem",
+                  borderRadius: "999px",
+                  cursor: "pointer",
+                }}
+              >
+                {showForm ? "Annuler" : "+ Ajouter une photo"}
+              </button>
             </div>
-          )}
-        </div>
-      )}
+
+            {/* Formulaire ajout */}
+            {showForm && (
+              <div
+                style={{
+                  background: "#1a1a1a",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "16px",
+                  padding: "1.75rem",
+                  marginBottom: "1.5rem",
+                }}
+              >
+                <h2
+                  className="font-bebas text-xl"
+                  style={{ color: "#fff", marginBottom: "1.25rem" }}
+                >
+                  Ajouter une photo
+                </h2>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem",
+                  }}
+                >
+                  <div>
+                    <label
+                      className="font-barlow-condensed uppercase text-xs tracking-widest"
+                      style={{
+                        color: "rgba(255,255,255,0.3)",
+                        display: "block",
+                        marginBottom: "0.4rem",
+                      }}
+                    >
+                      URL de la photo *
+                    </label>
+                    <input
+                      type="text"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="https://res.cloudinary.com/..."
+                      style={{
+                        width: "100%",
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "10px",
+                        padding: "0.75rem 1rem",
+                        color: "#fff",
+                        fontSize: "0.9rem",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                      {
+                        label: "Nom",
+                        value: nom,
+                        setter: setNom,
+                        type: "text",
+                        placeholder: "Nom de la photo",
+                      },
+                      {
+                        label: "Lieu",
+                        value: lieu,
+                        setter: setLieu,
+                        type: "text",
+                        placeholder: "Lieu",
+                      },
+                    ].map((f) => (
+                      <div key={f.label}>
+                        <label
+                          className="font-barlow-condensed uppercase text-xs tracking-widest"
+                          style={{
+                            color: "rgba(255,255,255,0.3)",
+                            display: "block",
+                            marginBottom: "0.4rem",
+                          }}
+                        >
+                          {f.label}
+                        </label>
+                        <input
+                          type={f.type}
+                          value={f.value}
+                          onChange={(e) => f.setter(e.target.value)}
+                          placeholder={f.placeholder}
+                          style={{
+                            width: "100%",
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "10px",
+                            padding: "0.75rem 1rem",
+                            color: "#fff",
+                            fontSize: "0.9rem",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                    ))}
+                    <div>
+                      <label
+                        className="font-barlow-condensed uppercase text-xs tracking-widest"
+                        style={{
+                          color: "rgba(255,255,255,0.3)",
+                          display: "block",
+                          marginBottom: "0.4rem",
+                        }}
+                      >
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        style={{
+                          width: "100%",
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "10px",
+                          padding: "0.75rem 1rem",
+                          color: "#fff",
+                          fontSize: "0.9rem",
+                          outline: "none",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="font-barlow-condensed uppercase text-xs tracking-widest"
+                        style={{
+                          color: "rgba(255,255,255,0.3)",
+                          display: "block",
+                          marginBottom: "0.4rem",
+                        }}
+                      >
+                        Catégorie
+                      </label>
+                      <select
+                        value={categorie}
+                        onChange={(e) => setCategorie(e.target.value)}
+                        style={{
+                          width: "100%",
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "10px",
+                          padding: "0.75rem 1rem",
+                          color: "#fff",
+                          fontSize: "0.9rem",
+                          outline: "none",
+                          boxSizing: "border-box",
+                        }}
+                      >
+                        <option value="" style={{ background: "#1a1a1a" }}>
+                          Sélectionner
+                        </option>
+                        <option value="trail" style={{ background: "#1a1a1a" }}>
+                          Trail
+                        </option>
+                        <option value="route" style={{ background: "#1a1a1a" }}>
+                          Route
+                        </option>
+                        <option value="cross" style={{ background: "#1a1a1a" }}>
+                          Cross
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSubmit}
+                    className="font-barlow-condensed uppercase tracking-widest text-sm"
+                    style={{
+                      background: "#e8186d",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "999px",
+                      padding: "0.75rem 1.5rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Ajouter
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Grille photos */}
+            {photos.length === 0 ? (
+              <p
+                className="font-barlow text-center"
+                style={{ color: "rgba(255,255,255,0.3)", padding: "3rem 0" }}
+              >
+                Aucune photo pour cet événement
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {photos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    onClick={() => toggleSelect(photo.id)}
+                    style={{
+                      position: "relative",
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                      aspectRatio: "1",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      outline: selectedIds.has(photo.id)
+                        ? "3px solid #e8186d"
+                        : "none",
+                      transform: selectedIds.has(photo.id)
+                        ? "scale(0.95)"
+                        : "scale(1)",
+                    }}
+                  >
+                    <img
+                      src={photo.url}
+                      alt={photo.nom ?? "photo"}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    {selectedIds.has(photo.id) && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          background: "rgba(232,24,109,0.3)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            background: "#e8186d",
+                            borderRadius: "50%",
+                            width: "32px",
+                            height: "32px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <span
+                            style={{
+                              color: "#fff",
+                              fontSize: "1.1rem",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ✓
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    {photo.nom && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          background:
+                            "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
+                          padding: "0.75rem",
+                        }}
+                      >
+                        <p
+                          className="font-barlow-condensed text-xs"
+                          style={{
+                            color: "#fff",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {photo.nom}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

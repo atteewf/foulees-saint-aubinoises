@@ -11,18 +11,34 @@ export default function AdminPanel() {
   );
 
   return (
-    <div className="min-h-screen bg-fsa-gris-pale">
+    <div className="min-h-screen" style={{ background: "#0f0f0f" }}>
       {/* Onglets */}
-      <div className="bg-white border-b border-fsa-gris-pale px-6 py-4 flex gap-4">
+      <div
+        style={{
+          background: "#1a1a1a",
+          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          padding: "0.75rem 1.5rem",
+          display: "flex",
+          gap: "0.75rem",
+          overflowX: "auto",
+        }}
+      >
         {(["agenda", "galerie", "escapade"] as const).map((o) => (
           <button
             key={o}
             onClick={() => setOnglet(o)}
-            className={`font-barlow-condensed uppercase tracking-widest text-sm px-5 py-2 rounded-lg transition-colors ${
-              onglet === o
-                ? "bg-fsa-rose text-white"
-                : "text-fsa-gris-med hover:text-fsa-noir"
-            }`}
+            className="font-barlow-condensed uppercase tracking-widest text-xs flex-shrink-0"
+            style={{
+              padding: "0.5rem 1.25rem",
+              borderRadius: "999px",
+              border:
+                onglet === o
+                  ? "1px solid #e8186d"
+                  : "1px solid rgba(255,255,255,0.1)",
+              background: onglet === o ? "#e8186d" : "transparent",
+              color: onglet === o ? "#fff" : "rgba(255,255,255,0.4)",
+              cursor: "pointer",
+            }}
           >
             {o === "agenda"
               ? "Agenda"
