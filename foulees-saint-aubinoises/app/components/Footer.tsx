@@ -3,15 +3,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaFacebook, FaInstagram, FaStrava } from "react-icons/fa";
 
-export default function Footer() {
-  const liens = [
-    { href: "/leclub", label: "Le Club" },
-    { href: "/agenda", label: "Agenda" },
-    { href: "/galerie", label: "Galerie" },
-    { href: "/resultats", label: "Résultats" },
-    { href: "/contact", label: "Contact" },
-  ];
+const liens = [
+  { href: "/leclub", label: "Le Club" },
+  { href: "/agenda", label: "Agenda" },
+  { href: "/galerie", label: "Galerie" },
+  { href: "/resultats", label: "Résultats" },
+  { href: "/contact", label: "Contact" },
+];
 
+const reseaux = [
+  { href: "https://www.facebook.com/fouleessstaubinoises", icon: FaFacebook },
+  {
+    href: "https://www.instagram.com/foulees_saint_aubinoises",
+    icon: FaInstagram,
+  },
+  { href: "https://strava.com", icon: FaStrava },
+];
+
+export default function Footer() {
   return (
     <footer
       style={{
@@ -20,15 +29,14 @@ export default function Footer() {
       }}
     >
       <div
-        style={{ maxWidth: "1024px", margin: "0 auto", padding: "2rem 1.5rem" }}
+        style={{ maxWidth: "64rem", margin: "0 auto", padding: "2rem 0.5rem" }}
       >
         {/* Ligne principale */}
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
+            flexDirection: "column",
             alignItems: "center",
-            flexWrap: "wrap",
             gap: "1.5rem",
           }}
         >
@@ -42,105 +50,65 @@ export default function Footer() {
               gap: "0.75rem",
             }}
           >
-            <Image
-              src="/foulees/logo_fsa_fond_blanc.svg"
-              alt="Logo FSA"
-              width={40}
-              height={40}
-            />
             <span
               className="font-bebas"
               style={{
                 fontSize: "1rem",
-                color: "#fff",
                 letterSpacing: "0.05em",
+                color: "#fff",
               }}
             >
               Foulées <span style={{ color: "#e8186d" }}>Saint-Aubinoises</span>
             </span>
           </Link>
 
-          {/* Navigation compacte inline */}
+          {/* Navigation */}
           <nav
             style={{
               display: "flex",
-              gap: "1.5rem",
               flexWrap: "wrap",
-              alignItems: "center",
+              justifyContent: "center",
+              gap: "1.25rem",
             }}
           >
-            {liens.map((lien) => (
+            {liens.map((l) => (
               <Link
-                key={lien.href}
-                href={lien.href}
+                key={l.href}
+                href={l.href}
                 className="font-barlow-condensed uppercase"
                 style={{
                   fontSize: "0.7rem",
                   letterSpacing: "0.1em",
                   color: "rgba(255,255,255,0.35)",
                   textDecoration: "none",
-                  transition: "color 0.2s",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
                 }
               >
-                {lien.label}
+                {l.label}
               </Link>
             ))}
           </nav>
 
           {/* Réseaux */}
           <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-            <Link
-              href="https://www.facebook.com/fouleessstaubinoises"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "rgba(255,255,255,0.35)",
-                fontSize: "1.1rem",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
-              }
-            >
-              <FaFacebook />
-            </Link>
-            <Link
-              href="https://www.instagram.com/foulees_saint_aubinoises"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "rgba(255,255,255,0.35)",
-                fontSize: "1.1rem",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
-              }
-            >
-              <FaInstagram />
-            </Link>
-            <Link
-              href="https://strava.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "rgba(255,255,255,0.35)",
-                fontSize: "1.1rem",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
-              }
-            >
-              <FaStrava />
-            </Link>
+            {reseaux.map(({ href, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "rgba(255,255,255,0.35)", fontSize: "1.1rem" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.35)")
+                }
+              >
+                <Icon />
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -151,9 +119,8 @@ export default function Footer() {
             marginTop: "1.5rem",
             paddingTop: "1rem",
             display: "flex",
-            justifyContent: "space-between",
+            flexDirection: "column",
             alignItems: "center",
-            flexWrap: "wrap",
             gap: "0.5rem",
           }}
         >
@@ -161,7 +128,7 @@ export default function Footer() {
             className="font-barlow"
             style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}
           >
-            © 2025 Les Foulées Saint-Aubinoises — Tous droits réservés
+            © 2026 Les Foulées Saint-Aubinoises — Tous droits réservés
           </p>
           <Link
             href="/mentionslegales"

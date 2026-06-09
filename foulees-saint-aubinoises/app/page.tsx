@@ -7,8 +7,8 @@ export default function Home() {
       style={{
         position: "relative",
         overflow: "hidden",
-        minHeight: "727px",
-        padding: "3rem 0",
+        minHeight: "calc(100svh - 86px)",
+        padding: "3rem 1.5rem",
       }}
     >
       {/* Coureurs en fond semi-transparent */}
@@ -29,7 +29,10 @@ export default function Home() {
       />
 
       {/* Bulles animées */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      <div
+        className="hidden md:block absolute inset-0 pointer-events-none overflow-hidden"
+        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+      >
         <style>{`
           @keyframes orbit1 {
             0%   { transform: translate(0px, 0px) scale(1); opacity: 0.7; }
@@ -96,7 +99,20 @@ export default function Home() {
         <div className="bulle b14" />
         <div className="bulle b15" />
       </div>
-
+      {/* SVG mobile */}
+      <img
+        src="/foulees/bulles.svg"
+        alt=""
+        className="md:hidden absolute pointer-events-none"
+        style={{
+          bottom: "0",
+          right: "-10%",
+          width: "75%",
+          opacity: 0.9,
+          filter:
+            "invert(27%) sepia(90%) saturate(2000%) hue-rotate(310deg) brightness(90%)",
+        }}
+      />
       {/* Contenu texte */}
       <div
         className="relative text-center px-6"
@@ -159,6 +175,41 @@ export default function Home() {
             <Typewriter text="Association de course à pied sur la commune de Saint-Aubin d'Aubigné" />
           </p>
         </div>
+        {/* Mentions légales */}
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "1.5rem",
+          left: 0,
+          right: 0,
+          textAlign: "center",
+          zIndex: 10,
+        }}
+      >
+        {" "}
+        <p
+          className="font-barlow"
+          style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}
+        >
+          © 2026 Les Foulées Saint-Aubinoises — Tous droits réservés
+        </p>
+        <a
+          href="/mentionslegales"
+          className="font-barlow"
+          style={{
+            fontSize: "0.65rem",
+            color: "rgba(255,255,255,0.2)",
+            textDecoration: "none",
+            letterSpacing: "0.05em",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = "rgba(255,255,255,0.2)")
+          }
+        >
+          Mentions légales
+        </a>
       </div>
     </main>
   );

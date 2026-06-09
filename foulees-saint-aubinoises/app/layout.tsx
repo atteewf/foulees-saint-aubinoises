@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Bebas_Neue, Barlow, Barlow_Condensed } from "next/font/google";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
-
+import FooterWrapper from "./components/FooterWrapper";
 import "./globals.css";
 
 const bebas = Bebas_Neue({
@@ -40,7 +40,7 @@ export default function RootLayout({
       <body className="bg-fsa-blanc text-fsa-noir">
         <Navbar />
         {children}
-        <Footer />
+        <FooterWrapper />
       </body>
     </html>
   );

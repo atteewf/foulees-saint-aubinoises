@@ -2,26 +2,153 @@
 
 import { Resultats } from "../types/database";
 import { useState } from "react";
-
-export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
+import { supabase } from "../lib/supabase";
+export function ResultatsList({
+  resultats: initialResultats,
+}: {
+  resultats: Resultats[];
+}) {
+  const [resultats, setResultats] = useState(initialResultats);
   const [recherche, setRecherche] = useState("");
   const [hovered, setHovered] = useState<string | null>(null);
 
+  // Modal states
+  const [modal, setModal] = useState<"closed" | "login" | "form">("closed");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Login form
+  const [email, setEmail] = useState("");
+  const [mdp, setMdp] = useState("");
+
+  // Résultat form
+  const [form, setForm] = useState({
+    course: "",
+    date: "",
+    distance: "",
+    temps: "",
+    classement: "",
+  });
   const filtered = resultats.filter(
     (r) =>
-      r.coureur?.toLowerCase().includes(recherche.toLowerCase()) ||
+      r.personnes?.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
+      r.personnes?.prenom?.toLowerCase().includes(recherche.toLowerCase()) ||
       r.course?.toLowerCase().includes(recherche.toLowerCase()),
   );
 
-  // Trier par date desc
   const sorted = [...filtered].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
+  // Login
+  const handleLogin = async () => {
+    setLoginLoading(true);
+    setLoginError("");
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: mdp,
+    });
+    if (error) {
+      setLoginError("Email ou mot de passe incorrect.");
+    } else {
+      setModal("form");
+    }
+    setLoginLoading(false);
+  };
+
+  // Submit résultat
+  const handleSubmit = async () => {
+    setSubmitLoading(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setSubmitLoading(false);
+      return;
+    }
+
+    // Récupérer la personne
+    const { data: personne } = await supabase
+      .from("personnes")
+      .select("id, nom, prenom")
+      .eq("users_id", user.id)
+      .single();
+
+    if (!personne) {
+      setSubmitLoading(false);
+      return;
+    }
+
+    const { data: newResult, error } = await supabase
+      .from("resultats")
+      .insert({
+        course: form.course,
+        date: form.date,
+        distance: Number(form.distance),
+        temps: form.temps,
+        classement: Number(form.classement),
+        coureur_id: personne.id,
+      })
+      .select(
+        "id, course, date, distance, temps, classement, coureur_id, created_at",
+      ) // ← colonnes explicites
+      .single();
+
+    if (!error && newResult) {
+      const resultAvecPersonne = {
+        ...newResult,
+        personnes: { nom: personne.nom, prenom: personne.prenom },
+      };
+      setResultats((prev) => [resultAvecPersonne, ...prev]);
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        setModal("closed");
+        setSubmitSuccess(false);
+        setForm({
+          course: "",
+          date: "",
+          distance: "",
+          temps: "",
+          classement: "",
+        });
+        supabase.auth.signOut();
+      }, 1500);
+    }
+    setSubmitLoading(false);
+  };
+
+  const closeModal = () => {
+    setModal("closed");
+    setLoginError("");
+    setEmail("");
+    setMdp("");
+  };
+
+  const inputStyle = {
+    width: "100%",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "8px",
+    padding: "0.75rem 1rem",
+    color: "#fff",
+    fontSize: "0.875rem",
+    outline: "none",
+    fontFamily: "inherit",
+  };
+
   return (
     <div>
-      {/* Barre de recherche */}
-      <div style={{ marginBottom: "2rem", position: "relative" }}>
+      {/* Barre recherche + bouton */}
+      <div
+        style={{
+          display: "flex",
+          gap: "0.75rem",
+          marginBottom: "2rem",
+          alignItems: "center",
+        }}
+      >
         <input
           type="text"
           value={recherche}
@@ -29,19 +156,37 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
           placeholder="Rechercher un coureur ou une course..."
           className="font-barlow"
           style={{
-            width: "100%",
+            flex: 1,
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: "12px",
-            padding: "0.875rem 1.25rem",
+            padding: "0.75rem 1.25rem",
             color: "#fff",
-            fontSize: "0.9rem",
+            fontSize: "0.85rem",
             outline: "none",
           }}
         />
+        <button
+          onClick={() => setModal("login")}
+          className="font-barlow-condensed uppercase"
+          style={{
+            flexShrink: 0,
+            background: "#e8186d",
+            border: "none",
+            borderRadius: "12px",
+            padding: "0.75rem 1.25rem",
+            color: "#fff",
+            fontSize: "0.8rem",
+            letterSpacing: "0.1em",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+          }}
+        >
+          + Ajouter
+        </button>
       </div>
 
-      {/* Stats globales */}
+      {/* Stats */}
       <div
         style={{
           display: "grid",
@@ -54,8 +199,9 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
           { label: "Résultats", value: resultats.length },
           {
             label: "Coureurs",
-            value: new Set(resultats.map((r) => r.coureur)).size,
+            value: new Set(resultats.map((r) => r.coureur_id)).size,
           },
+
           {
             label: "Courses",
             value: new Set(resultats.map((r) => r.course)).size,
@@ -92,29 +238,18 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
         ))}
       </div>
 
-      {/* État vide */}
+      {/* Liste résultats */}
       {sorted.length === 0 && (
         <div style={{ textAlign: "center", padding: "4rem 0" }}>
           <p
             className="font-bebas"
-            style={{
-              fontSize: "1.5rem",
-              color: "rgba(255,255,255,0.2)",
-              marginBottom: "0.5rem",
-            }}
+            style={{ fontSize: "1.5rem", color: "rgba(255,255,255,0.2)" }}
           >
             Aucun résultat trouvé
-          </p>
-          <p
-            className="font-barlow"
-            style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.2)" }}
-          >
-            Essayez un autre nom ou une autre course.
           </p>
         </div>
       )}
 
-      {/* Liste résultats */}
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         {sorted.map((result) => (
           <div
@@ -128,14 +263,12 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
               borderRadius: "12px",
               padding: "1.25rem 1.5rem",
               display: "grid",
-              gridTemplateColumns: "auto 1fr auto",
+              gridTemplateColumns: "auto 1px 1fr auto",
               gap: "1.5rem",
               alignItems: "center",
               transition: "all 0.2s",
-              cursor: "default",
             }}
           >
-            {/* Date */}
             <div style={{ textAlign: "center", minWidth: "48px" }}>
               <div
                 className="font-bebas"
@@ -157,19 +290,12 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
                 })}
               </div>
             </div>
-
-            {/* Séparateur */}
             <div
               style={{
-                width: "1px",
                 background: "rgba(255,255,255,0.06)",
                 alignSelf: "stretch",
-                flexShrink: 0,
-                gridColumn: "unset",
               }}
             />
-
-            {/* Infos */}
             <div style={{ minWidth: 0 }}>
               <div
                 style={{
@@ -184,7 +310,9 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
                   className="font-barlow-condensed font-bold"
                   style={{ fontSize: "1rem", color: "#fff" }}
                 >
-                  {result.coureur}
+                  {result.personnes
+                    ? `${result.personnes.prenom} ${result.personnes.nom}`
+                    : "Anonyme"}
                 </p>
                 <span
                   style={{
@@ -192,7 +320,6 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
                     height: "3px",
                     borderRadius: "50%",
                     background: "rgba(255,255,255,0.2)",
-                    flexShrink: 0,
                   }}
                 />
                 <p
@@ -227,8 +354,6 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
                 )}
               </div>
             </div>
-
-            {/* Classement */}
             <div style={{ textAlign: "right", flexShrink: 0 }}>
               {result.classement && (
                 <div>
@@ -259,6 +384,230 @@ export function ResultatsList({ resultats }: { resultats: Resultats[] }) {
           </div>
         ))}
       </div>
+
+      {/* Modal overlay */}
+      {modal !== "closed" && (
+        <div
+          onClick={closeModal}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.7)",
+            zIndex: 50,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#1a1a1a",
+              border: "1px solid rgba(232,24,109,0.2)",
+              borderRadius: "16px",
+              padding: "2rem",
+              width: "100%",
+              maxWidth: "420px",
+            }}
+          >
+            {/* Login */}
+            {modal === "login" && (
+              <div>
+                <p
+                  className="font-barlow-condensed uppercase"
+                  style={{
+                    fontSize: "0.7rem",
+                    letterSpacing: "0.15em",
+                    color: "#e8186d",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Espace membre
+                </p>
+                <h2
+                  className="font-bebas"
+                  style={{
+                    fontSize: "2rem",
+                    color: "#fff",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  Connexion
+                </h2>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                  }}
+                >
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="font-barlow"
+                    style={inputStyle}
+                  />
+                  <input
+                    type="password"
+                    placeholder="Mot de passe"
+                    value={mdp}
+                    onChange={(e) => setMdp(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                    className="font-barlow"
+                    style={inputStyle}
+                  />
+                  {loginError && (
+                    <p
+                      className="font-barlow"
+                      style={{ fontSize: "0.8rem", color: "#e8186d" }}
+                    >
+                      {loginError}
+                    </p>
+                  )}
+                  <button
+                    onClick={handleLogin}
+                    disabled={loginLoading}
+                    className="font-barlow-condensed uppercase"
+                    style={{
+                      background: "#e8186d",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "0.875rem",
+                      color: "#fff",
+                      fontSize: "0.85rem",
+                      letterSpacing: "0.1em",
+                      cursor: "pointer",
+                      marginTop: "0.5rem",
+                      opacity: loginLoading ? 0.7 : 1,
+                    }}
+                  >
+                    {loginLoading ? "Connexion..." : "Se connecter"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Formulaire ajout */}
+            {modal === "form" && (
+              <div>
+                <p
+                  className="font-barlow-condensed uppercase"
+                  style={{
+                    fontSize: "0.7rem",
+                    letterSpacing: "0.15em",
+                    color: "#e8186d",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Espace membre
+                </p>
+                <h2
+                  className="font-bebas"
+                  style={{
+                    fontSize: "2rem",
+                    color: "#fff",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  Ajouter un résultat
+                </h2>
+                {submitSuccess ? (
+                  <p
+                    className="font-bebas"
+                    style={{
+                      fontSize: "1.5rem",
+                      color: "#e8186d",
+                      textAlign: "center",
+                    }}
+                  >
+                    ✓ Résultat ajouté !
+                  </p>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Nom de la course"
+                      value={form.course}
+                      onChange={(e) =>
+                        setForm({ ...form, course: e.target.value })
+                      }
+                      className="font-barlow"
+                      style={inputStyle}
+                    />
+                    <input
+                      type="date"
+                      value={form.date}
+                      onChange={(e) =>
+                        setForm({ ...form, date: e.target.value })
+                      }
+                      className="font-barlow"
+                      style={inputStyle}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Distance (km)"
+                      value={form.distance}
+                      onChange={(e) =>
+                        setForm({ ...form, distance: e.target.value })
+                      }
+                      className="font-barlow"
+                      style={inputStyle}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Temps (ex: 1h32)"
+                      value={form.temps}
+                      onChange={(e) =>
+                        setForm({ ...form, temps: e.target.value })
+                      }
+                      className="font-barlow"
+                      style={inputStyle}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Classement"
+                      value={form.classement}
+                      onChange={(e) =>
+                        setForm({ ...form, classement: e.target.value })
+                      }
+                      className="font-barlow"
+                      style={inputStyle}
+                    />
+                    <button
+                      onClick={handleSubmit}
+                      disabled={submitLoading}
+                      className="font-barlow-condensed uppercase"
+                      style={{
+                        background: "#e8186d",
+                        border: "none",
+                        borderRadius: "8px",
+                        padding: "0.875rem",
+                        color: "#fff",
+                        fontSize: "0.85rem",
+                        letterSpacing: "0.1em",
+                        cursor: "pointer",
+                        marginTop: "0.5rem",
+                        opacity: submitLoading ? 0.7 : 1,
+                      }}
+                    >
+                      {submitLoading ? "Envoi..." : "Enregistrer"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

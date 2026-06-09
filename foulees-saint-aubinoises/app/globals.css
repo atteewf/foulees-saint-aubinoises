@@ -31,10 +31,19 @@
   margin: 0;
   padding: 0;
 }
-
+.btn-escapade:hover {
+  background: #e8186d !important;
+  color: #fff !important;
+  border-color: #e8186d !important;
+}
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
 body {
   font-family: var(--font-barlow);
-  background: var(--color-fsa-blanc);
+  background: var(--color-fsa-noir);
   color: var(--color-fsa-noir);
   width: 100%;
 }
@@ -42,7 +51,9 @@ body {
 html {
   scrollbar-gutter: stable;
 } */
-
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 .hero-home {
   position: relative;
   overflow: hidden;

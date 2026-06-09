@@ -3,6 +3,7 @@
 import { Event } from "../types/database";
 import Link from "next/link";
 import { useState } from "react";
+import { HiArrowCircleRight } from "react-icons/hi";
 
 // ─── EventCard ────────────────────────────────────────────────────────────────
 
@@ -19,9 +20,9 @@ function EventCard({ event, isPast }: { event: Event; isPast: boolean }) {
       <div
         style={{
           background: hovered
-            ? "rgba(232,24,109,0.06)"
+            ? "rgba(232,24,109,0.6)"
             : "rgba(255,255,255,0.03)",
-          border: `1px solid ${hovered ? "rgba(232,24,109,0.4)" : "rgba(255,255,255,0.07)"}`,
+          border: `1px solid ${hovered ? "rgba(232, 24, 111, 0.87)" : "rgba(255,255,255,0.07)"}`,
           borderRadius: "12px",
           padding: "1.25rem 1.5rem",
           display: "flex",
@@ -48,8 +49,9 @@ function EventCard({ event, isPast }: { event: Event; isPast: boolean }) {
           <div
             className="font-barlow-condensed uppercase"
             style={{
-              fontSize: "0.6rem",
+              fontSize: "0.9rem",
               letterSpacing: "0.1em",
+              fontWeight: 700,
               color: isPast ? "rgba(255,255,255,0.2)" : "#e8186d",
               marginTop: "2px",
             }}
@@ -123,7 +125,7 @@ function EventCard({ event, isPast }: { event: Event; isPast: boolean }) {
               <span
                 className="font-barlow"
                 style={{
-                  fontSize: "0.78rem",
+                  fontSize: "0.88rem",
                   color: "rgba(255,255,255,0.4)",
                 }}
               >
@@ -134,7 +136,7 @@ function EventCard({ event, isPast }: { event: Event; isPast: boolean }) {
               <span
                 className="font-barlow"
                 style={{
-                  fontSize: "0.78rem",
+                  fontSize: "0.88rem",
                   color: "rgba(255,255,255,0.3)",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -149,31 +151,25 @@ function EventCard({ event, isPast }: { event: Event; isPast: boolean }) {
         </div>
 
         {/* Flèche */}
-        <div
+        <HiArrowCircleRight
           style={{
-            color: hovered ? "#e8186d" : "rgba(255,255,255,0.2)",
-            fontSize: "1.1rem",
+            color: hovered ? "#e8186d" : "rgba(255,255,255,0.15)",
+            fontSize: "1.4rem",
             transition: "all 0.2s",
             transform: hovered ? "translateX(3px)" : "translateX(0)",
             alignSelf: "center",
             flexShrink: 0,
           }}
-        >
-          →
-        </div>
+        />
       </div>
     </Link>
   );
 }
 
 // ─── EventTimeline ────────────────────────────────────────────────────────────
+type Props = { events: Event[]; filtre: string };
 
-type Props = { events: Event[] };
-
-export function EventTimeline({ events }: Props) {
-  const [filtre, setFiltre] = useState<string>("tout");
-  const types = ["tout", "trail", "route", "cross"];
-
+export function EventTimeline({ events, filtre }: Props) {
   const now = new Date();
 
   const filtered = events.filter((e) =>
@@ -201,40 +197,6 @@ export function EventTimeline({ events }: Props) {
 
   return (
     <div>
-      {/* Filtres */}
-      <div
-        style={{
-          display: "flex",
-          gap: "0.6rem",
-          marginBottom: "2.5rem",
-          flexWrap: "wrap",
-        }}
-      >
-        {types.map((t) => (
-          <button
-            key={t}
-            onClick={() => setFiltre(t)}
-            className="font-barlow-condensed uppercase"
-            style={{
-              padding: "0.4rem 1.1rem",
-              borderRadius: "999px",
-              fontSize: "0.72rem",
-              letterSpacing: "0.1em",
-              cursor: "pointer",
-              border:
-                filtre === t
-                  ? "1px solid #e8186d"
-                  : "1px solid rgba(255,255,255,0.12)",
-              background: filtre === t ? "#e8186d" : "transparent",
-              color: filtre === t ? "#fff" : "rgba(255,255,255,0.4)",
-              transition: "all 0.2s",
-            }}
-          >
-            {t === "tout" ? "Tous" : t}
-          </button>
-        ))}
-      </div>
-
       {/* État vide */}
       {filtered.length === 0 && (
         <div style={{ textAlign: "center", padding: "4rem 0" }}>
@@ -281,150 +243,119 @@ export function EventTimeline({ events }: Props) {
       {/* Timeline */}
       {Object.entries(grouped).length > 0 && (
         <div style={{ position: "relative" }}>
-          {/* Ligne verticale rose */}
-          <div
-            style={{
-              position: "absolute",
-              left: "0",
-              top: "0",
-              bottom: "0",
-              width: "2px",
-              background:
-                "linear-gradient(to bottom, #e8186d, rgba(232,24,109,0.1))",
-            }}
-          />
-
-          <div style={{ paddingLeft: "2rem" }}>
-            {/* À venir */}
-            {aVenir.length > 0 && (
-              <div style={{ marginBottom: "3rem" }}>
-                {Object.entries(grouped)
-                  .filter(([, g]) => !g.isPast)
-                  .map(([mois, group]) => (
-                    <div key={mois} style={{ marginBottom: "2rem" }}>
-                      {/* Point mois */}
-                      <div
+          {/* À venir */}
+          {aVenir.length > 0 && (
+            <div style={{ marginBottom: "3rem" }}>
+              {Object.entries(grouped)
+                .filter(([, g]) => !g.isPast)
+                .map(([mois, group]) => (
+                  <div key={mois} style={{ marginBottom: "2rem" }}>
+                    {/* Point mois */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "1rem",
+                        marginBottom: "1rem",
+                        position: "relative",
+                      }}
+                    >
+                      <p
+                        className="font-barlow-condensed uppercase"
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "1rem",
-                          marginBottom: "1rem",
-                          position: "relative",
+                          fontSize: "1rem",
+                          letterSpacing: "0.12em",
+                          color: "#e8186d",
                         }}
                       >
-                        <div
-                          style={{
-                            position: "absolute",
-                            left: "-2.4rem",
-                            width: "12px",
-                            height: "12px",
-                            borderRadius: "50%",
-                            background: "#e8186d",
-                            border: "2px solid #0f0f0f",
-                            boxShadow: "0 0 8px rgba(232,24,109,0.6)",
-                          }}
-                        />
-                        <p
-                          className="font-barlow-condensed uppercase"
-                          style={{
-                            fontSize: "0.72rem",
-                            letterSpacing: "0.12em",
-                            color: "#e8186d",
-                          }}
-                        >
-                          ● {mois}
-                        </p>
-                      </div>
-
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "0.75rem",
-                        }}
-                      >
-                        {group.events.map((event) => (
-                          <EventCard
-                            key={event.id}
-                            event={event}
-                            isPast={false}
-                          />
-                        ))}
-                      </div>
+                        ● {mois}
+                      </p>
                     </div>
-                  ))}
-              </div>
-            )}
 
-            {/* Passés */}
-            {passes.length > 0 && (
-              <div>
-                <p
-                  className="font-barlow-condensed uppercase"
-                  style={{
-                    fontSize: "0.7rem",
-                    letterSpacing: "0.1em",
-                    color: "rgba(255,255,255,0.2)",
-                    marginBottom: "1.5rem",
-                  }}
-                >
-                  Événements passés
-                </p>
-                {Object.entries(grouped)
-                  .filter(([, g]) => g.isPast)
-                  .map(([mois, group]) => (
-                    <div key={mois} style={{ marginBottom: "2rem" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "1rem",
-                          marginBottom: "1rem",
-                          position: "relative",
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: "absolute",
-                            left: "-2.4rem",
-                            width: "10px",
-                            height: "10px",
-                            borderRadius: "50%",
-                            background: "rgba(255,255,255,0.15)",
-                            border: "2px solid #0f0f0f",
-                          }}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.75rem",
+                      }}
+                    >
+                      {group.events.map((event) => (
+                        <EventCard
+                          key={event.id}
+                          event={event}
+                          isPast={false}
                         />
-                        <p
-                          className="font-barlow-condensed uppercase"
-                          style={{
-                            fontSize: "0.7rem",
-                            letterSpacing: "0.12em",
-                            color: "rgba(255,255,255,0.2)",
-                          }}
-                        >
-                          ● {mois}
-                        </p>
-                      </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+
+          {/* Passés */}
+          {passes.length > 0 && (
+            <div>
+              <p
+                className="font-barlow-condensed uppercase"
+                style={{
+                  fontSize: "1rem",
+                  letterSpacing: "0.1em",
+                  color: "rgba(255, 255, 255, 0.8)",
+                  marginBottom: "1.5rem",
+                }}
+              >
+                Événements passés
+              </p>
+              {Object.entries(grouped)
+                .filter(([, g]) => g.isPast)
+                .map(([mois, group]) => (
+                  <div key={mois} style={{ marginBottom: "2rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "1rem",
+                        marginBottom: "1rem",
+                        position: "relative",
+                      }}
+                    >
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "0.75rem",
+                          position: "absolute",
+                          left: "-2.4rem",
+                          width: "10px",
+                          height: "10px",
+                          borderRadius: "50%",
+                          background: "rgba(255,255,255,0.15)",
+                          border: "2px solid #0f0f0f",
+                        }}
+                      />
+                      <p
+                        className="font-barlow-condensed uppercase"
+                        style={{
+                          fontSize: "1rem",
+                          letterSpacing: "0.12em",
+                          color: "rgba(255,255,255,0.2)",
                         }}
                       >
-                        {group.events.map((event) => (
-                          <EventCard
-                            key={event.id}
-                            event={event}
-                            isPast={true}
-                          />
-                        ))}
-                      </div>
+                        ● {mois}
+                      </p>
                     </div>
-                  ))}
-              </div>
-            )}
-          </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.75rem",
+                      }}
+                    >
+                      {group.events.map((event) => (
+                        <EventCard key={event.id} event={event} isPast={true} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import { supabase } from "../lib/supabase";
 import { ResultatsList } from "../components/Resultats";
-
+import { PageHeader } from "../components/PageHeader";
 async function ResultsData() {
   const { data: resultats } = await supabase
     .from("resultats")
-    .select("*")
+    .select("*, personnes(nom, prenom)")
     .order("date", { ascending: false });
   return <ResultatsList resultats={resultats ?? []} />;
 }
@@ -25,6 +25,22 @@ export default function ResultatPage() {
           zIndex: 0,
         }}
       />
+      {/* Semelle fond */}
+      <img
+        src="/foulees/tong.svg"
+        alt=""
+        style={{
+          position: "fixed",
+          right: "-10%", // déborde légèrement à droite
+          bottom: "0",
+          height: "90vh",
+          opacity: 0.6, // très discret
+          filter:
+            "invert(27%) sepia(90%) saturate(2000%) hue-rotate(310deg) brightness(90%)",
+          pointerEvents: "none",
+          zIndex: 0, // derrière le contenu
+        }}
+      />
 
       <div
         style={{
@@ -36,37 +52,12 @@ export default function ResultatPage() {
         }}
       >
         {/* Header */}
-        <div style={{ marginBottom: "3rem" }}>
-          <p
-            className="font-barlow-condensed uppercase"
-            style={{
-              fontSize: "0.72rem",
-              letterSpacing: "0.12em",
-              color: "#e8186d",
-              marginBottom: "0.5rem",
-            }}
-          >
-            FSA · Saint-Aubin-d'Aubigné
-          </p>
-          <h1
-            className="font-bebas"
-            style={{
-              fontSize: "4rem",
-              color: "#fff",
-              lineHeight: 1,
-              marginBottom: "0.5rem",
-            }}
-          >
-            Résultats
-          </h1>
-          <p
-            className="font-barlow"
-            style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.35)" }}
-          >
-            Performances et classements des membres de l'association.
-          </p>
-        </div>
-
+        <PageHeader
+          label="FSA · Saint-Aubin-d'Aubigné"
+          title="Résultat"
+          subtitle=" Performances et classements des membres de l'association.
+      "
+        />
         <Suspense
           fallback={
             <p

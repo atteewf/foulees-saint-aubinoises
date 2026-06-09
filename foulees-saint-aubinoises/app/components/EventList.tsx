@@ -40,7 +40,7 @@ export function EventList({ events }: { events: Event[] }) {
       <div
         style={{
           background: "#1a1a1a",
-          border: `1px solid ${isPast ? "rgba(255,255,255,0.06)" : "rgba(232,24,109,0.2)"}`,
+          border: `1px solid ${isPast ? "rgba(255,255,255,0.06)" : "rgba(232, 24, 111, 0.86)"}`,
           borderRadius: "16px",
           overflow: "hidden",
           transition: "transform 0.2s, box-shadow 0.2s",
@@ -50,7 +50,7 @@ export function EventList({ events }: { events: Event[] }) {
           (e.currentTarget as HTMLDivElement).style.transform =
             "translateY(-4px)";
           (e.currentTarget as HTMLDivElement).style.boxShadow =
-            "0 12px 40px rgba(232,24,109,0.15)";
+            "0 12px 40px rgba(232, 24, 111, 0.84)";
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
@@ -60,7 +60,7 @@ export function EventList({ events }: { events: Event[] }) {
         {/* Header date */}
         <div
           style={{
-            background: isPast ? "rgba(255,255,255,0.05)" : "#e8186d",
+            background: isPast ? "rgba(255, 255, 255, 0.98)" : "#e8186d",
             padding: "1.25rem 1.5rem",
             display: "flex",
             justifyContent: "space-between",
@@ -115,7 +115,7 @@ export function EventList({ events }: { events: Event[] }) {
               <span
                 className="font-barlow-condensed uppercase"
                 style={{
-                  fontSize: "1rem",
+                  fontSize: "2rem",
                   background: "rgba(255,255,255,0.2)",
                   color: "#fff",
                   padding: "0.2rem 0.6rem",
@@ -161,7 +161,7 @@ export function EventList({ events }: { events: Event[] }) {
               className="font-barlow"
               style={{
                 fontSize: "0.85rem",
-                color: "rgba(255,255,255,0.5)",
+                color: "rgba(255, 255, 255, 0.81)",
                 lineHeight: 1.6,
                 marginBottom: "1rem",
               }}
@@ -185,7 +185,7 @@ export function EventList({ events }: { events: Event[] }) {
             <span
               className="font-barlow-condensed uppercase"
               style={{
-                fontSize: "0.75rem",
+                fontSize: "0.95rem",
                 color: "rgb(255, 253, 253)",
                 letterSpacing: "0.08em",
               }}

@@ -1,7 +1,7 @@
 // app/contact/page.tsx
 import Link from "next/link";
 import { Mail, Phone, ExternalLink } from "lucide-react";
-
+import { PageHeader } from "../components/PageHeader";
 export default function ContactPage() {
   return (
     <main className="bg-fsa-gris-pale py-16">
@@ -9,12 +9,11 @@ export default function ContactPage() {
         style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
       >
         {/* Header */}
-        <div className="mb-12">
-          <p className="font-barlow-condensed text-fsa-rose uppercase tracking-widest text-sm mb-2">
-            Nous rejoindre
-          </p>
-          <h1 className="font-bebas text-5xl text-fsa-noir">Contact</h1>
-        </div>
+        <PageHeader
+          label="FSA · Saint-Aubin-d'Aubigné"
+          title="Contact"
+          subtitle="Nous rejoindre, et participer aà une accosiation conviviale et dynamique"
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Bloc gauche — Infos */}
