@@ -76,37 +76,19 @@ export default function AgendaPage() {
         />
 
         {/* Contenu flex */}
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            maxWidth: "1024px",
-            margin: "0 auto",
-            padding: "0rem 1.5rem",
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
+        {/* Filtres + Timeline via AgendaClient */}
+        <Suspense
+          fallback={
+            <p
+              className="font-barlow"
+              style={{ color: "rgba(255,255,255,0.3)" }}
+            >
+              Chargement...
+            </p>
+          }
         >
-          {/* Header fixe */}
-          <div style={{ marginBottom: "1.5rem", flexShrink: 0 }}>
-            {/* ... ton header ... */}
-          </div>
-
-          {/* Filtres + Timeline via AgendaClient */}
-          <Suspense
-            fallback={
-              <p
-                className="font-barlow"
-                style={{ color: "rgba(255,255,255,0.3)" }}
-              >
-                Chargement...
-              </p>
-            }
-          >
-            <EventsData />
-          </Suspense>
-        </div>
+          <EventsData />
+        </Suspense>
       </div>
     </div>
   );

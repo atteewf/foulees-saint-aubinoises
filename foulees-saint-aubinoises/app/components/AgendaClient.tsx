@@ -3,7 +3,7 @@ import { useState } from "react";
 import { EventTimeline } from "./EventTimeline";
 import { Event } from "../types/database";
 
-const types = ["tout", "trail", "route", "cross"];
+const types = ["tout", "trail", "route", "cross", "entrainement", "club"];
 
 export function AgendaClient({ events }: { events: Event[] }) {
   const [filtre, setFiltre] = useState("tout");

@@ -4,6 +4,34 @@ import { Mail, Phone, ExternalLink } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 
 export default function ContactPage() {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      message: formData.get("body"),
+    };
+
+    const res = await fetch("/api/contact", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      alert("Message envoyé");
+      e.currentTarget.reset();
+    } else {
+      alert("Erreur lors de l'envoi");
+    }
+  };
   return (
     <div
       style={{
@@ -273,8 +301,7 @@ export default function ContactPage() {
               Envoyer un message
             </h2>
             <form
-              action="mailto:fouleessaintaubinoises@gmail.com"
-              method="GET"
+              onSubmit={handleSubmit}
               style={{
                 display: "flex",
                 flexDirection: "column",
