@@ -1,12 +1,12 @@
 import { Users, Medal, MapPin, DoorOpen } from "lucide-react";
 import { StatCounter } from "../components/StatCounter";
+import { FaRunning, FaDumbbell } from "react-icons/fa";
 
 export default function LeClubPage() {
   const bureau = [
-    { initials: "PL", name: "Pierre L.", role: "Président" },
-    { initials: "ML", name: "Marie L.", role: "Secrétaire" },
-    { initials: "JD", name: "Jean D.", role: "Trésorier" },
-    { initials: "SB", name: "Sophie B.", role: "Resp. communication" },
+    { initials: "GT", name: "Ghislain T.", role: "Président" },
+    { initials: "AT", name: "Anne T.", role: "Secrétaire" },
+    { initials: "FL", name: "Florence L.", role: "Trésorière" },
   ];
 
   const valeurs = [
@@ -32,10 +32,29 @@ export default function LeClubPage() {
     },
   ];
 
+  const seances = [
+    {
+      jour: "Mardi",
+      heure: "18h30 – 19h30",
+      type: "TABATA",
+      desc: "Musculation adaptée à la course à pied, encadrée par Hugues ou Hervé.",
+      coach: "Hugues ou Hervé",
+      icon: <FaDumbbell size={18} />,
+    },
+    {
+      jour: "Mercredi",
+      heure: "18h30 – 19h30",
+      type: "Fractionné",
+      desc: "Séance de fractionné coachée par Hugues.",
+      coach: "Hugues",
+      icon: <FaRunning size={18} />,
+    },
+  ];
+
   const timeline = [
     {
-      year: "1998",
-      text: "Création de l'association par un groupe de coureurs passionnés du village.",
+      year: "1992",
+      text: "Création de l'association le 7 décembre 1992 par un groupe de coureurs passionnés du village.",
     },
     {
       year: "2005",
@@ -43,16 +62,17 @@ export default function LeClubPage() {
     },
     {
       year: "2015",
-      text: "Cap des 100 adhérents franchi. Développement des sorties trail.",
+      text: "Cap des 80 adhérents franchi. Développement des sorties trail.",
     },
     {
       year: "Aujourd'hui",
-      text: "Plus de 120 membres actifs et des dizaines de participations collectives chaque année.",
+      text: "81 membres actifs pour la saison 2025/2026, avec des événements phares : la T3C et le Relais de Mélesse.",
     },
   ];
 
   return (
     <div style={{ width: "100%", background: "#0f0f0f", minHeight: "100vh" }}>
+      {/* Fond dots */}
       <div
         style={{
           position: "fixed",
@@ -64,25 +84,33 @@ export default function LeClubPage() {
           zIndex: 0,
         }}
       />
-      {/* Semelle fond */}
-      {/* Semelle fond */}
+
+      {/* Semelle desktop */}
       <img
         src="/foulees/tong.svg"
         alt=""
+        className="hidden md:block"
         style={{
           position: "fixed",
-          right: "-10%", // déborde légèrement à droite
+          right: "-10%",
           bottom: "0",
           height: "90vh",
-          opacity: 0.6, // très discret
+          opacity: 0.06,
           filter:
             "invert(27%) sepia(90%) saturate(2000%) hue-rotate(310deg) brightness(90%)",
           pointerEvents: "none",
-          zIndex: 0, // derrière le contenu
+          zIndex: 0,
         }}
       />
+
       <div
-        style={{ maxWidth: "1024px", margin: "0 auto", padding: "3rem 1.5rem" }}
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "1024px",
+          margin: "0 auto",
+          padding: "3rem 1.5rem",
+        }}
       >
         {/* Hero */}
         <div
@@ -93,7 +121,7 @@ export default function LeClubPage() {
             backgroundPosition: "center",
             marginBottom: "2rem",
             position: "relative",
-            height: "280px",
+            height: "clamp(160px, 40vw, 280px)",
             border: "1px solid rgba(232,24,109,0.2)",
           }}
         >
@@ -113,20 +141,20 @@ export default function LeClubPage() {
           />
         </div>
 
-        {/* Stats 3 + 1 */}
+        {/* Stats */}
         <div
-          className="grid grid-cols-3 gap-4"
+          className="grid grid-cols-3 gap-2 md:gap-4"
           style={{ marginBottom: "1rem" }}
         >
           <StatCounter
-            target={120}
-            suffix="+"
+            target={81}
+            suffix=""
             duration={1500}
             delay={0}
             label="Adhérents"
           />
           <StatCounter
-            target={1998}
+            target={1992}
             suffix=""
             duration={2500}
             delay={800}
@@ -173,14 +201,14 @@ export default function LeClubPage() {
             alt="Groupe FSA"
             style={{
               width: "100%",
-              height: "380px",
+              height: "clamp(160px, 45vw, 380px)",
               objectFit: "cover",
-              objectPosition: "center center",
+              objectPosition: "center",
             }}
           />
           <div
             style={{
-              padding: "2rem",
+              padding: "1.5rem",
               textAlign: "center",
               borderBottom: "1px solid rgba(255,255,255,0.08)",
             }}
@@ -193,124 +221,83 @@ export default function LeClubPage() {
               <span style={{ color: "#e8186d" }}>Saint-Aubinoises</span>
             </p>
             <p
-              className="font-barlow text-sm leading-relaxed"
+              className="font-barlow text-base leading-relaxed"
               style={{ color: "rgba(255,255,255,0.5)" }}
             >
-              La saison 2025/2026 a réuni plus de 120 coureurs passionnés, de
-              tous niveaux, autour d'une même passion : courir ensemble sur les
-              routes et sentiers de Bretagne.
+              La saison 2025/2026 a réuni plus de{" "}
+              <strong style={{ color: "#fff" }}>81</strong> coureurs passionnés.
+              Nos adhérents sont des runners de tous niveaux rassemblés autour
+              d'une même passion : courir ensemble, se dépasser et représenter
+              fièrement notre commune sur les routes et sentiers de Bretagne et
+              d'ailleurs.
             </p>
           </div>
-          <div
-            style={{
-              padding: "2rem",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "1rem",
-            }}
-          >
-            {bureau.map((member) => (
-              <div
-                key={member.initials}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                }}
-              >
+          <div style={{ padding: "1.5rem", textAlign: "center" }}>
+            <p
+              className="font-bebas text-xl"
+              style={{ color: "rgba(255,255,255,0.5)", marginBottom: "1.5rem" }}
+            >
+              Le bureau se compose de :
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-items-center">
+              {bureau.map((member) => (
                 <div
+                  key={member.initials}
                   style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "50%",
-                    background: "rgba(232,24,109,0.15)",
-                    border: "1px solid rgba(232,24,109,0.3)",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
+                    gap: "0.75rem",
                   }}
                 >
-                  <span
-                    className="font-barlow-condensed text-xs font-bold"
-                    style={{ color: "#e8186d" }}
+                  <div
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      background: "rgba(232,24,109,0.15)",
+                      border: "1px solid rgba(232,24,109,0.3)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
                   >
-                    {member.initials}
-                  </span>
+                    <span
+                      className="font-barlow-condensed text-xs font-bold"
+                      style={{ color: "#e8186d" }}
+                    >
+                      {member.initials}
+                    </span>
+                  </div>
+                  <div>
+                    <p
+                      className="font-barlow text-sm font-medium"
+                      style={{ color: "#fff" }}
+                    >
+                      {member.name}
+                    </p>
+                    <p
+                      className="font-barlow text-xs"
+                      style={{ color: "rgba(255,255,255,0.4)" }}
+                    >
+                      {member.role}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p
-                    className="font-barlow text-sm font-medium"
-                    style={{ color: "#fff" }}
-                  >
-                    {member.name}
-                  </p>
-                  <p
-                    className="font-barlow text-xs"
-                    style={{ color: "rgba(255,255,255,0.4)" }}
-                  >
-                    {member.role}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Section basse 3 colonnes */}
         <div
-          className="w-full rounded-2xl"
-          style={{
-            background: "#1a1a1a",
-            padding: "3rem",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "3rem",
-          }}
+          className="w-full rounded-2xl grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-12"
+          style={{ background: "#1a1a1a", marginBottom: "3rem" }}
         >
-          {/* Colonne 1 — Présentation */}
+          {/* Nos valeurs */}
           <div>
             <h2
-              className="font-barlow-condensed uppercase text-xs tracking-widest font-bold"
-              style={{ color: "#ffffff", marginBottom: "1.5rem" }}
-            >
-              Présentation
-            </h2>
-            <div
-              style={{
-                borderLeft: "2px solid #e8186d",
-                paddingLeft: "1.25rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-              }}
-            >
-              <p
-                className="font-barlow text-sm leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.6)" }}
-              >
-                Créée à Saint-Aubin-d'Aubigné en 1998, notre association réunit
-                des passionnés de course à pied, de tous âges et de tous
-                niveaux.
-              </p>
-              <p
-                className="font-barlow text-sm leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.6)" }}
-              >
-                Notre objectif : partager{" "}
-                <strong style={{ color: "#fff" }}>
-                  le plaisir de courir ensemble
-                </strong>
-                , se dépasser et représenter fièrement notre commune sur les
-                routes et sentiers de Bretagne.
-              </p>
-            </div>
-          </div>
-
-          {/* Colonne 2 — Nos valeurs */}
-          <div>
-            <h2
-              className="font-barlow-condensed uppercase text-xs tracking-widest font-bold"
+              className="font-barlow-condensed uppercase text-sm tracking-widest font-bold"
               style={{ color: "#ffffff", marginBottom: "1.5rem" }}
             >
               Nos valeurs
@@ -349,13 +336,13 @@ export default function LeClubPage() {
                   </div>
                   <div>
                     <p
-                      className="font-barlow-condensed uppercase text-xs tracking-wider font-bold"
+                      className="font-barlow-condensed uppercase text-sm tracking-wider font-bold"
                       style={{ color: "#fff", marginBottom: "0.25rem" }}
                     >
                       {v.title}
                     </p>
                     <p
-                      className="font-barlow text-xs leading-relaxed"
+                      className="font-barlow text-sm leading-relaxed"
                       style={{ color: "rgba(255,255,255,0.5)" }}
                     >
                       {v.desc}
@@ -366,10 +353,107 @@ export default function LeClubPage() {
             </div>
           </div>
 
-          {/* Colonne 3 — Notre histoire */}
+          {/* Nos rendez-vous */}
           <div>
             <h2
-              className="font-barlow-condensed uppercase text-xs tracking-widest font-bold"
+              className="font-barlow-condensed uppercase text-sm tracking-widest font-bold"
+              style={{ color: "#ffffff", marginBottom: "1.5rem" }}
+            >
+              Nos rendez-vous
+            </h2>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+              }}
+            >
+              {seances.map((s) => (
+                <div
+                  key={s.jour}
+                  style={{
+                    display: "flex",
+                    gap: "1rem",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      background: "rgba(232,24,109,0.15)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      color: "#e8186d",
+                    }}
+                  >
+                    {s.icon}
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        marginBottom: "0.25rem",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <p
+                        className="font-barlow-condensed uppercase text-sm font-bold"
+                        style={{ color: "#fff" }}
+                      >
+                        {s.jour}
+                      </p>
+                      <span
+                        style={{
+                          color: "rgba(255,255,255,0.2)",
+                          fontSize: "1rem",
+                        }}
+                      >
+                        ●
+                      </span>
+                      <p
+                        className="font-barlow-condensed text-sm"
+                        style={{ color: "#e8186d" }}
+                      >
+                        {s.heure}
+                      </p>
+                    </div>
+                    <p
+                      className="font-barlow-condensed uppercase text-sm tracking-wider font-bold"
+                      style={{ color: "#e8186d", marginBottom: "0.25rem" }}
+                    >
+                      {s.type}
+                    </p>
+                    <p
+                      className="font-barlow text-sm leading-relaxed"
+                      style={{ color: "rgba(255,255,255,0.5)" }}
+                    >
+                      {s.desc}
+                    </p>
+                    <p
+                      className="font-barlow text-sm"
+                      style={{
+                        color: "rgba(255,255,255,0.3)",
+                        marginTop: "0.25rem",
+                      }}
+                    >
+                      👤 {s.coach}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Notre histoire */}
+          <div>
+            <h2
+              className="font-barlow-condensed uppercase text-sm tracking-widest font-bold"
               style={{ color: "#ffffff", marginBottom: "1.5rem" }}
             >
               Notre histoire
@@ -398,13 +482,13 @@ export default function LeClubPage() {
                     }}
                   />
                   <p
-                    className="font-barlow-condensed uppercase text-xs tracking-widest"
+                    className="font-barlow-condensed uppercase text-sm tracking-widest"
                     style={{ color: "#e8186d", marginBottom: "0.25rem" }}
                   >
                     {item.year}
                   </p>
                   <p
-                    className="font-barlow text-xs leading-relaxed"
+                    className="font-barlow text-sm leading-relaxed"
                     style={{ color: "rgba(255,255,255,0.5)" }}
                   >
                     {item.text}

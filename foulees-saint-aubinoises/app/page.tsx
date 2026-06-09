@@ -3,36 +3,34 @@ import { Typewriter } from "./components/Typewriter";
 export default function Home() {
   return (
     <main
-      className="bg-fsa-noir flex items-center justify-center"
+      className="bg-fsa-noir flex flex-col items-center justify-center"
       style={{
         position: "relative",
         overflow: "hidden",
         minHeight: "calc(100svh - 86px)",
-        padding: "3rem 1.5rem",
+        padding: "2rem 1.5rem",
+        gap: "0",
       }}
     >
-      {/* Coureurs en fond semi-transparent */}
+      {/* Coureurs */}
       <img
         src="/foulees/coureurs_en_noir.svg"
         alt=""
         style={{
           position: "absolute",
-          width: "100%",
-          maxWidth: "1200px",
+          width: "90%",
+          maxWidth: "1000px",
           opacity: 0.3,
-          top: "30%",
-          left: "52%",
-          transform: "translate(-50%, -50%)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -65%)", // ← décale vers le haut
           pointerEvents: "none",
           filter: "invert(1)",
         }}
       />
 
-      {/* Bulles animées */}
-      <div
-        className="hidden md:block absolute inset-0 pointer-events-none overflow-hidden"
-        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-      >
+      {/* Bulles desktop uniquement */}
+      <div className="hidden md:block absolute inset-0 pointer-events-none overflow-hidden">
         <style>{`
           @keyframes orbit1 {
             0%   { transform: translate(0px, 0px) scale(1); opacity: 0.7; }
@@ -100,26 +98,25 @@ export default function Home() {
         <div className="bulle b15" />
       </div>
 
-      {/* Contenu texte */}
-      <div
-        className="relative text-center px-6"
-        style={{ zIndex: 10, width: "100%", marginTop: "-10rem" }}
+      {/* Slogan */}
+      <p
+        className="font-bebas tracking-[0.25em] uppercase relative z-10 "
+        style={{
+          color: "#e8186d",
+          fontSize: "clamp(0.9rem, 2vw, 1.5rem)",
+          marginBottom: "clamp(1rem, 10vh, 4rem)",
+        }}
       >
-        {/* Slogan au-dessus des coureurs */}
-        <p
-          className="font-bebas text-2xl tracking-[0.25em] uppercase"
-          style={{ color: "#e8186d", marginBottom: "10rem" }}
-        >
-          Trail Running & Fun
-        </p>
+        Trail Running & Fun
+      </p>
 
-        {/* Titre */}
-        <h1
-          className="font-bebas leading-[0.85] tracking-tight uppercase"
-          style={{
-            fontSize: "clamp(3.5rem, 11vw, 9rem)",
-            color: "#ffffff",
-            textShadow: `
+      {/* Titre */}
+      <h1
+        className="font-bebas leading-[0.85] tracking-tight uppercase text-center relative z-10"
+        style={{
+          fontSize: "clamp(2.5rem, 11vw, 9rem)",
+          color: "#ffffff",
+          textShadow: `
       #e8e8e8 0 -1px 0,
       #ffffff 1px 1px 0,
       #cccccc 2px 2px 0,
@@ -128,14 +125,15 @@ export default function Home() {
       #555555 5px 5px 0,
       #333 5px 5px 10px
     `,
-          }}
-        >
-          Les Foulées
-          <br />
-          <span
-            style={{
-              color: "#e8186d",
-              textShadow: `
+        }}
+      >
+        Les Foulées
+        <br />
+        <span
+          style={{
+            color: "#e8186d",
+
+            textShadow: `
     #ffb3d0 0 -1px 0,
     #e8186d 1px 1px 0,
     #c0125a 2px 2px 0,
@@ -144,26 +142,26 @@ export default function Home() {
     #5a0828 5px 5px 0,
     #333 5px 5px 10px
   `,
-            }}
-          >
-            Saint-Aubinoises
-          </span>
-        </h1>
-
-        {/* Description machine à écrire */}
-        <div
-          className="min-h-[40px] flex items-center justify-center"
-          style={{ marginTop: "5rem" }}
+          }}
         >
-          <p
-            className="font-barlow text-sm max-w-xl text-center tracking-wide"
-            style={{ color: "rgb(255, 255, 255)" }}
-          >
-            <Typewriter text="Association de course à pied sur la commune de Saint-Aubin d'Aubigné" />
-          </p>
-        </div>
-        {/* Mentions légales */}
+          Saint-Aubinoises
+        </span>
+      </h1>
+
+      {/* Typewriter */}
+      <div
+        className="min-h-[40px] flex items-center justify-center relative z-10"
+        style={{ marginTop: "clamp(1rem, 4vh, 3rem)" }}
+      >
+        <p
+          className="font-barlow text-sm max-w-xl text-center tracking-wide"
+          style={{ color: "#fff" }}
+        >
+          <Typewriter text="Association de course à pied sur la commune de Saint-Aubin d'Aubigné" />
+        </p>
       </div>
+
+      {/* Mentions légales */}
       <div
         style={{
           position: "absolute",
@@ -174,7 +172,6 @@ export default function Home() {
           zIndex: 10,
         }}
       >
-        {" "}
         <p
           className="font-barlow"
           style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}
@@ -188,7 +185,6 @@ export default function Home() {
             fontSize: "0.65rem",
             color: "rgba(255,255,255,0.2)",
             textDecoration: "none",
-            letterSpacing: "0.05em",
           }}
           onMouseEnter={(e) => (e.currentTarget.style.color = "#e8186d")}
           onMouseLeave={(e) =>
