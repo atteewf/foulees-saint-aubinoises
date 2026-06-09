@@ -99,20 +99,7 @@ export default function Home() {
         <div className="bulle b14" />
         <div className="bulle b15" />
       </div>
-      {/* SVG mobile */}
-      <img
-        src="/foulees/bulles.svg"
-        alt=""
-        className="md:hidden absolute pointer-events-none"
-        style={{
-          bottom: "0",
-          right: "-10%",
-          width: "75%",
-          opacity: 0.9,
-          filter:
-            "invert(27%) sepia(90%) saturate(2000%) hue-rotate(310deg) brightness(90%)",
-        }}
-      />
+
       {/* Contenu texte */}
       <div
         className="relative text-center px-6"
