@@ -3,17 +3,24 @@ import Link from "next/link";
 import { MapWrapper } from "@/app/components/MapWrapper";
 import { PageHeader } from "@/app/components/PageHeader";
 
-const coordonnees: Record<string, { lat: number; lon: number }> = {
-  "saint-aubin-d'aubigné": { lat: 48.2333, lon: -1.5833 },
-  rennes: { lat: 48.1173, lon: -1.6778 },
-  liffré: { lat: 48.2167, lon: -1.5167 },
-  "saint-grégoire": { lat: 48.1667, lon: -1.6833 },
-  "saint-broladre": { lat: 48.6167, lon: -1.6333 },
-  "thorigné-fouillard": { lat: 48.15, lon: -1.6167 },
-  montgermont: { lat: 48.15, lon: -1.7167 },
-  "guipry-messac": { lat: 47.8167, lon: -1.8167 },
-  betton: { lat: 48.1833, lon: -1.6333 },
-};
+async function getCoords(
+  lieu: string,
+): Promise<{ lat: number; lon: number } | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(lieu + ", France")}&format=json&limit=1`,
+      {
+        headers: { "User-Agent": "FSA-Saint-Aubin/1.0" },
+        next: { revalidate: 86400 },
+      },
+    );
+    const data = await res.json();
+    if (!data[0]) return null;
+    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+  } catch {
+    return null;
+  }
+}
 
 const codeMeteo: Record<number, { label: string; emoji: string }> = {
   0: { label: "Ciel dégagé", emoji: "☀️" },
@@ -30,20 +37,14 @@ const codeMeteo: Record<number, { label: string; emoji: string }> = {
   80: { label: "Averses légères", emoji: "🌦️" },
   95: { label: "Orage", emoji: "⛈️" },
 };
-
-async function getMeteo(lieu: string, date: string) {
+async function getMeteo(coords: { lat: number; lon: number }, date: string) {
   try {
-    const key = lieu.toLowerCase();
-    const coords = Object.entries(coordonnees).find(([k]) => key.includes(k));
-    if (!coords) return null;
-
-    const { lat, lon } = coords[1];
+    const { lat, lon } = coords;
     const eventDate = new Date(date);
     const today = new Date();
     const diffDays = Math.ceil(
       (eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
     );
-
     if (diffDays < 0 || diffDays > 16) return null;
 
     const res = await fetch(
@@ -95,8 +96,8 @@ export default async function EventDetailPage({
       </div>
     );
   }
-
-  const meteo = await getMeteo(event.lieu ?? "", event.date);
+  const coords = await getCoords(event.lieu ?? "");
+  const meteo = coords ? await getMeteo(coords, event.date) : null;
   const meteoInfo = meteo
     ? (codeMeteo[meteo.code] ?? { label: "Variable", emoji: "🌤️" })
     : null;
@@ -133,19 +134,6 @@ export default async function EventDetailPage({
             backgroundImage:
               "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
-          }}
-        />
-        <img
-          src="/foulees/semelle_agenda.svg"
-          alt=""
-          style={{
-            position: "absolute",
-            left: "40%",
-            bottom: "-21%",
-            height: "85vh",
-            opacity: 0.6,
-            filter:
-              "invert(27%) sepia(90%) saturate(2000%) hue-rotate(310deg) brightness(90%)",
           }}
         />
       </div>
@@ -415,10 +403,10 @@ export default async function EventDetailPage({
                 Localisation · {event.lieu}
               </p>
             </div>
-            {coordonnees[event.lieu?.toLowerCase() ?? ""] ? (
+            {coords ? (
               <MapWrapper
-                lat={coordonnees[event.lieu!.toLowerCase()].lat}
-                lon={coordonnees[event.lieu!.toLowerCase()].lon}
+                lat={coords.lat}
+                lon={coords.lon}
                 lieu={event.lieu!}
                 nom={event.nom}
               />
@@ -434,7 +422,7 @@ export default async function EventDetailPage({
                   Carte non disponible pour ce lieu.
                 </p>
               </div>
-            )}
+            )}{" "}
           </div>
         </div>
 
