@@ -4,7 +4,10 @@ import { useState } from "react";
 import { AdminPanelAgenda } from "../components/AdminPanelAgenda";
 import { AdminPanelGalerie } from "../components/AdminPanelGalerie";
 import { AdminPanelEscapNocturne } from "../components/AdminPanelEscapNocturne";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  robots: "noindex, nofollow",
+};
 export default function AdminPanel() {
   const [onglet, setOnglet] = useState<"agenda" | "galerie" | "escapade">(
     "agenda",

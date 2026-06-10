@@ -2,6 +2,41 @@ import { supabase } from "@/app/lib/supabase";
 import Link from "next/link";
 import { MapWrapper } from "@/app/components/MapWrapper";
 import { PageHeader } from "@/app/components/PageHeader";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const { data: event } = await supabase
+    .from("events")
+    .select("nom, lieu, date, description, type")
+    .eq("id", id)
+    .single();
+
+  if (!event) return { title: "Agenda | Foulées Saint-Aubinoises" };
+
+  const dateFormatted = new Date(event.date).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return {
+    title: `${event.nom} — ${dateFormatted} | Foulées Saint-Aubinoises`,
+    description: `${event.nom} à ${event.lieu} le ${dateFormatted}. ${event.description ?? "Course organisée par les Foulées Saint-Aubinoises, club de running à Saint-Aubin-d'Aubigné."}`,
+    openGraph: {
+      title: `${event.nom} — Foulées Saint-Aubinoises`,
+      description: `${event.nom} à ${event.lieu} le ${dateFormatted}.`,
+      url: `https://foulees-saint-aubinoises.fr/agenda/${id}`,
+      siteName: "Foulées Saint-Aubinoises",
+      locale: "fr_FR",
+      type: "website",
+    },
+  };
+}
 
 async function getCoords(
   lieu: string,

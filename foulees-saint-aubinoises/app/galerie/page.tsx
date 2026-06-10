@@ -2,7 +2,21 @@ import { Suspense } from "react";
 import { supabase } from "../lib/supabase";
 import { Galerie } from "../components/Galerie";
 import { PageHeader } from "../components/PageHeader";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Galerie | Foulées Saint-Aubinoises — Photos de courses et sorties",
+  description:
+    "Photos des courses, trails et sorties collectives des Foulées Saint-Aubinoises. Club de running à Saint-Aubin-d'Aubigné, près de Rennes en Ille-et-Vilaine.",
+  openGraph: {
+    title: "Galerie — Foulées Saint-Aubinoises",
+    description:
+      "Photos des événements et sorties du club de course à pied de Saint-Aubin-d'Aubigné.",
+    url: "https://foulees-saint-aubinoises.fr/galerie",
+    siteName: "Foulées Saint-Aubinoises",
+    locale: "fr_FR",
+    type: "website",
+  },
+};
 async function GalerieData() {
   const { data: events } = await supabase.from("events").select(`
     *,

@@ -3,6 +3,29 @@ import { supabase } from "../lib/supabase";
 import { EventTimeline } from "../components/EventTimeline";
 import { AgendaClient } from "../components/AgendaClient";
 import { PageHeader } from "../components/PageHeader";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title:
+    "Foulées Saint-Aubinoises | Club de course à pied Saint-Aubin-d'Aubigné",
+  description:
+    "Association de course à pied à Saint-Aubin-d'Aubigné (35). Trail, route, cross — sorties hebdomadaires ouvertes à tous niveaux. Près de Rennes, Ille-et-Vilaine.",
+  keywords: [
+    "course à pied Saint-Aubin-d'Aubigné",
+    "club running Rennes",
+    "trail Ille-et-Vilaine",
+    "association sportive 35",
+  ],
+  openGraph: {
+    title: "Agenda — Foulées Saint-Aubinoises",
+    description:
+      "Tous les événements de la saison : trail, route, cross, sorties club.",
+    url: "https://foulees-saint-aubinoises.fr/agenda",
+    siteName: "Foulées Saint-Aubinoises",
+    locale: "fr_FR",
+    type: "website",
+  },
+};
 async function EventsData() {
   const { data: events } = await supabase
     .from("events")

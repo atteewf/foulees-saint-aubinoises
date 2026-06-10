@@ -1,6 +1,35 @@
 import { supabase } from "@/app/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const { data: event } = await supabase
+    .from("events")
+    .select("nom, lieu, date")
+    .eq("id", id)
+    .single();
+
+  if (!event) return { title: "Galerie | Foulées Saint-Aubinoises" };
+
+  return {
+    title: `${event.nom} | Galerie — Foulées Saint-Aubinoises`,
+    description: `Photos de ${event.nom} à ${event.lieu}. Club de running de Saint-Aubin-d'Aubigné.`,
+    openGraph: {
+      title: `${event.nom} — Galerie FSA`,
+      description: `Photos de ${event.nom} à ${event.lieu}.`,
+      url: `https://foulees-saint-aubinoises.fr/galerie/${id}`,
+      siteName: "Foulées Saint-Aubinoises",
+      locale: "fr_FR",
+      type: "website",
+    },
+  };
+}
 
 export default async function GalerieDetailPage({
   params,

@@ -1,6 +1,21 @@
 import { Users, Medal, MapPin, DoorOpen } from "lucide-react";
 import { StatCounter } from "../components/StatCounter";
 import { FaRunning, FaDumbbell } from "react-icons/fa";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Le Club | Foulées Saint-Aubinoises — Association running 35",
+  description:
+    "Découvrez les Foulées Saint-Aubinoises, association de course à pied fondée en 1998 à Saint-Aubin-d'Aubigné. 120 adhérents, sorties hebdomadaires, trail et route en Ille-et-Vilaine.",
+  openGraph: {
+    title: "Le Club — Foulées Saint-Aubinoises",
+    description:
+      "81 coureurs, fondé en 1992, ouvert à tous niveaux à Saint-Aubin-d'Aubigné près de Rennes.",
+    url: "https://foulees-saint-aubinoises.fr/leclub",
+    siteName: "Foulées Saint-Aubinoises",
+    locale: "fr_FR",
+    type: "website",
+  },
+};
 
 export default function LeClubPage() {
   const bureau = [

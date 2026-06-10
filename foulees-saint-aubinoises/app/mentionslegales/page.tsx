@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Mentions légales | Foulées Saint-Aubinoises",
+  description:
+    "Mentions légales du site des Foulées Saint-Aubinoises, association de course à pied à Saint-Aubin-d'Aubigné (35).",
+};
+
 export default function MentionsLegalesPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-16 w-full">

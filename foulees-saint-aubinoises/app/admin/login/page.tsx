@@ -1,7 +1,13 @@
 "use client";
+
 import { supabase } from "@/app/lib/supabase";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: "noindex, nofollow",
+};
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");

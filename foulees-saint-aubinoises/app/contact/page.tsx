@@ -2,6 +2,22 @@
 import Link from "next/link";
 import { Mail, Phone, ExternalLink } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Agenda | Foulées Saint-Aubinoises — Club de course à pied 35",
+  description:
+    "Calendrier des courses, trails et sorties collectives des Foulées Saint-Aubinoises. Association de running à Saint-Aubin-d'Aubigné, près de Rennes.",
+  openGraph: {
+    title: "Agenda — Foulées Saint-Aubinoises",
+    description:
+      "Tous les événements de la saison : trail, route, cross, sorties club.",
+    url: "https://foulees-saint-aubinoises.fr/agenda",
+    siteName: "Foulées Saint-Aubinoises",
+    locale: "fr_FR",
+    type: "website",
+  },
+};
 
 export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

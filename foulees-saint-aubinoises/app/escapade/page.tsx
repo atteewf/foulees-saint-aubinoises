@@ -1,5 +1,23 @@
 import { Suspense } from "react";
 import EscapadeCourse from "../components/EscapadeCourse";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title:
+    "Escapades Nocturnes 2026 | Foulées Saint-Aubinoises — Course nocturne 35",
+  description:
+    "Les Escapades Nocturnes, la course nocturne emblématique des Foulées Saint-Aubinoises à Saint-Aubin-d'Aubigné. Inscriptions, épreuves et infos sur la course.",
+  openGraph: {
+    title: "Escapades Nocturnes — Foulées Saint-Aubinoises",
+    description:
+      "Course nocturne à Saint-Aubin-d'Aubigné, Ille-et-Vilaine. Plusieurs distances, ambiance conviviale. Course enfant",
+    url: "https://foulees-saint-aubinoises.fr/escapade",
+    siteName: "Foulées Saint-Aubinoises",
+    locale: "fr_FR",
+    type: "website",
+  },
+};
+
 export default function CourseNocturnePage() {
   return (
     <div style={{ width: "100%", background: "#0f0f0f", minHeight: "100vh" }}>

@@ -38,6 +38,27 @@ export default function RootLayout({
       className={`${bebas.variable} ${barlow.variable} ${barlowCondensed.variable}`}
     >
       <body className="bg-fsa-blanc text-fsa-noir">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SportsClub",
+              name: "Foulées Saint-Aubinoises",
+              url: "https://foulees-saint-aubinoises.fr",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Saint-Aubin-d'Aubigné",
+                addressLocality: "Saint-Aubin-d'Aubigné",
+                postalCode: "35250",
+                addressCountry: "FR",
+              },
+              sport: "Course à pied",
+
+              email: "fouleessaintaubinoises@gmail.com",
+            }),
+          }}
+        />
         <Navbar />
         {children}
         <FooterWrapper />

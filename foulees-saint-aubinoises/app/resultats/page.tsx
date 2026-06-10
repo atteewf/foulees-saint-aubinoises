@@ -2,6 +2,21 @@ import { Suspense } from "react";
 import { supabase } from "../lib/supabase";
 import { ResultatsList } from "../components/Resultats";
 import { PageHeader } from "../components/PageHeader";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Résultats | Foulées Saint-Aubinoises — Palmarès des coureurs",
+  description:
+    "Résultats et palmarès des coureurs des Foulées Saint-Aubinoises. Performances en trail, route et cross en Ille-et-Vilaine et Bretagne.",
+  openGraph: {
+    title: "Résultats — Foulées Saint-Aubinoises",
+    description:
+      "Palmarès et performances des membres du club de running de Saint-Aubin-d'Aubigné.",
+    url: "https://foulees-saint-aubinoises.fr/resultats",
+    siteName: "Foulées Saint-Aubinoises",
+    locale: "fr_FR",
+    type: "website",
+  },
+};
 async function ResultsData() {
   const { data: resultats } = await supabase
     .from("resultats")
