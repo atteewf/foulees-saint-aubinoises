@@ -85,7 +85,7 @@ const BADGES: Badge[] = [
     condition: (r) => r.length >= 10,
   },
 ];
-
+//jnklsdjdskl
 export function ResultatsList({
   resultats: initialResultats,
 }: {
