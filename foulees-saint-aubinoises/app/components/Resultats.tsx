@@ -3,6 +3,87 @@
 import { Resultats } from "../types/database";
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+type Badge = {
+  id: string;
+  label: string;
+  image: string;
+  condition: (resultats: Resultats[]) => boolean;
+};
+
+const BADGES: Badge[] = [
+  {
+    id: "podium",
+    label: "Podium",
+    image: "/badges/podium.png",
+    condition: (r) => r.some((x) => x.classement !== null && x.classement <= 3),
+  },
+  {
+    id: "regulier",
+    label: "Régulier",
+    image: "/badges/regulier.png",
+    condition: (r) => {
+      const mois = new Date().getMonth();
+      const annee = new Date().getFullYear();
+      return (
+        r.filter((x) => {
+          const d = new Date(x.date);
+          return d.getMonth() === mois && d.getFullYear() === annee;
+        }).length >= 3
+      );
+    },
+  },
+  {
+    id: "trailer",
+    label: "Trailer",
+    image: "/badges/trailer.png",
+    condition: (r) =>
+      r.some((x) => x.type === "trail" && Number(x.distance) >= 20),
+  },
+  {
+    id: "rapide",
+    label: "Rapide",
+    image: "/badges/rapide.png",
+    condition: (r) =>
+      r.some(
+        (x) =>
+          Number(x.distance) === 10 &&
+          x.temps !== null &&
+          x.temps <= "00:45:00",
+      ),
+  },
+  {
+    id: "centurion",
+    label: "Centurion",
+    image: "/badges/centurion.png",
+    condition: (r) =>
+      r.reduce((acc, x) => acc + Number(x.distance ?? 0), 0) >= 100,
+  },
+  {
+    id: "bonrunner",
+    label: "Bon Runner",
+    image: "/badges/bonrunner.png",
+    condition: (r) =>
+      r.some((x) => x.classement !== null && x.classement <= 10),
+  },
+  {
+    id: "lent",
+    label: "Lent mais finit",
+    image: "/badges/lent.png",
+    condition: (r) => r.length >= 5,
+  },
+  {
+    id: "courage",
+    label: "Courage",
+    image: "/badges/courage.png",
+    condition: (r) => r.some((x) => Number(x.distance) >= 42),
+  },
+  {
+    id: "supermembre",
+    label: "Super Membre",
+    image: "/badges/supermembre.png",
+    condition: (r) => r.length >= 10,
+  },
+];
 export function ResultatsList({
   resultats: initialResultats,
 }: {

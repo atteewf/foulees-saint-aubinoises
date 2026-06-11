@@ -4,14 +4,12 @@ import { useState } from "react";
 import { AdminPanelAgenda } from "../components/AdminPanelAgenda";
 import { AdminPanelGalerie } from "../components/AdminPanelGalerie";
 import { AdminPanelEscapNocturne } from "../components/AdminPanelEscapNocturne";
-import { Metadata } from "next";
-export const metadata: Metadata = {
-  robots: "noindex, nofollow",
-};
+import { AdminPanelMembres } from "../components/AdminPanelMembres";
+
 export default function AdminPanel() {
-  const [onglet, setOnglet] = useState<"agenda" | "galerie" | "escapade">(
-    "agenda",
-  );
+  const [onglet, setOnglet] = useState<
+    "agenda" | "galerie" | "escapade" | "membres"
+  >("agenda");
 
   return (
     <div className="min-h-screen" style={{ background: "#0f0f0f" }}>
@@ -26,7 +24,7 @@ export default function AdminPanel() {
           overflowX: "auto",
         }}
       >
-        {(["agenda", "galerie", "escapade"] as const).map((o) => (
+        {(["agenda", "galerie", "escapade", "membres"] as const).map((o) => (
           <button
             key={o}
             onClick={() => setOnglet(o)}
@@ -47,7 +45,9 @@ export default function AdminPanel() {
               ? "Agenda"
               : o === "galerie"
                 ? "Galerie"
-                : "Escapades"}
+                : o === "escapade"
+                  ? "Escapades"
+                  : "Membres"}
           </button>
         ))}
       </div>
@@ -56,6 +56,7 @@ export default function AdminPanel() {
       {onglet === "agenda" && <AdminPanelAgenda />}
       {onglet === "galerie" && <AdminPanelGalerie />}
       {onglet === "escapade" && <AdminPanelEscapNocturne />}
+      {onglet === "membres" && <AdminPanelMembres />}
     </div>
   );
 }

@@ -34,6 +34,9 @@ export function AdminPanelGalerie() {
   const [lieu, setLieu] = useState("");
   const [categorie, setCategorie] = useState("");
 
+  //Upload cloudinary
+  const [uploading, setUploading] = useState(false);
+
   // ─── Fetch events avec count photos ──────────────────────────────────────
 
   const fetchEvents = async () => {
@@ -177,6 +180,35 @@ export function AdminPanelGalerie() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
+  };
+
+  //Upload photos cloudinary
+  const handleUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const sigRes = await fetch("/api/cloudinary-signature", {
+        method: "POST",
+      });
+      const { timestamp, signature, folder, api_key, cloud_name } =
+        await sigRes.json();
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("timestamp", timestamp);
+      formData.append("signature", signature);
+      formData.append("folder", folder);
+      formData.append("api_key", api_key);
+
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+        { method: "POST", body: formData },
+      );
+      const data = await uploadRes.json();
+      setUrl(data.secure_url);
+    } catch (err) {
+      console.error("Upload échoué", err);
+    }
+    setUploading(false);
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────
@@ -494,13 +526,15 @@ export function AdminPanelGalerie() {
                         marginBottom: "0.4rem",
                       }}
                     >
-                      URL de la photo *
+                      Photo *
                     </label>
                     <input
-                      type="text"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      placeholder="https://res.cloudinary.com/..."
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUpload(file);
+                      }}
                       style={{
                         width: "100%",
                         background: "rgba(255,255,255,0.04)",
@@ -511,8 +545,28 @@ export function AdminPanelGalerie() {
                         fontSize: "0.9rem",
                         outline: "none",
                         boxSizing: "border-box",
+                        cursor: "pointer",
                       }}
                     />
+                    {uploading && (
+                      <p
+                        className="font-barlow text-xs"
+                        style={{ color: "#e8186d", marginTop: "0.4rem" }}
+                      >
+                        Upload en cours...
+                      </p>
+                    )}
+                    {url && !uploading && (
+                      <p
+                        className="font-barlow text-xs"
+                        style={{
+                          color: "rgba(34,197,94,1)",
+                          marginTop: "0.4rem",
+                        }}
+                      >
+                        ✓ Photo uploadée
+                      </p>
+                    )}
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
