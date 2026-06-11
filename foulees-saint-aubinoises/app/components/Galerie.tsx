@@ -4,12 +4,13 @@ import { Event } from "../types/database";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { CircleArrowRight } from "lucide-react";
 
 export function Galerie({ events }: { events: Event[] }) {
   const [filtre, setFiltre] = useState<string>("tout");
   const [hovered, setHovered] = useState<string | null>(null);
 
-  const types = ["tout", "trail", "route", "cross"];
+  const types = ["tout", "trail", "route", "entrainement", "club"];
 
   const filtered = events.filter((e) =>
     filtre === "tout" ? true : e.type === filtre,
@@ -49,7 +50,13 @@ export function Galerie({ events }: { events: Event[] }) {
               transition: "all 0.2s",
             }}
           >
-            {t === "tout" ? "Tous" : t}
+            {t === "tout"
+              ? "Tous"
+              : t === "club"
+                ? "Vie du club"
+                : t === "entrainement"
+                  ? "Entraînement"
+                  : t}
           </button>
         ))}
       </div>
@@ -118,7 +125,12 @@ export function Galerie({ events }: { events: Event[] }) {
                   }}
                 >
                   <Image
-                    src={event.photos[0].url}
+                    src={
+                      (
+                        event.photos.find((p: any) => p.is_cover) ??
+                        event.photos[0]
+                      )?.url
+                    }
                     fill
                     style={{
                       objectFit: "cover",
@@ -224,86 +236,12 @@ export function Galerie({ events }: { events: Event[] }) {
                           : "translateX(0)",
                     }}
                   >
-                    →
+                    <CircleArrowRight size={20} />
                   </div>
                 </div>
               </div>
             </Link>
           ))}
-        </div>
-      )}
-
-      {/* Événements sans photos */}
-      {sansPhotos.length > 0 && (
-        <div>
-          <p
-            className="font-barlow-condensed uppercase"
-            style={{
-              fontSize: "0.7rem",
-              letterSpacing: "0.1em",
-              color: "rgba(255,255,255,0.2)",
-              marginBottom: "1.5rem",
-            }}
-          >
-            Événements sans photos · {sansPhotos.length}
-          </p>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: "0.75rem",
-            }}
-          >
-            {sansPhotos.map((event) => (
-              <div
-                key={event.id}
-                style={{
-                  background: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  borderRadius: "12px",
-                  padding: "1rem 1.25rem",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  opacity: 0.5,
-                }}
-              >
-                <div>
-                  <p
-                    className="font-barlow-condensed"
-                    style={{ fontSize: "0.9rem", color: "#fff" }}
-                  >
-                    {event.nom}
-                  </p>
-                  <p
-                    className="font-barlow"
-                    style={{
-                      fontSize: "0.72rem",
-                      color: "rgba(255,255,255,0.3)",
-                    }}
-                  >
-                    {new Date(event.date).toLocaleDateString("fr-FR", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-                {event.type && (
-                  <span
-                    className="font-barlow-condensed uppercase"
-                    style={{
-                      fontSize: "0.6rem",
-                      color: "rgba(255,255,255,0.3)",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    {event.type}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Event } from "../types/database";
 import { Photos } from "../types/database";
 import { PageHeader } from "./PageHeader";
+import { CircleArrowLeft } from "lucide-react";
 
 type EventWithCount = Event & { photoCount?: number };
 // ─── Composant principal ─────────────────────────────────────────────────────
@@ -36,6 +37,7 @@ export function AdminPanelGalerie() {
 
   //Upload cloudinary
   const [uploading, setUploading] = useState(false);
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
 
   // ─── Fetch events avec count photos ──────────────────────────────────────
 
@@ -159,17 +161,32 @@ export function AdminPanelGalerie() {
     setCategorie("");
     setShowForm(false);
   };
-
+  const setCover = async (photoId: string) => {
+    if (!selectedEvent) return;
+    // Retire is_cover de toutes les photos de l'event
+    await supabase
+      .from("photos")
+      .update({ is_cover: false })
+      .eq("event_id", selectedEvent.id);
+    // Met is_cover sur la photo sélectionnée
+    await supabase.from("photos").update({ is_cover: true }).eq("id", photoId);
+    await fetchPhotos(selectedEvent.id);
+  };
   const handleSubmit = async () => {
-    if (!url || !selectedEvent) return;
-    await supabase.from("photos").insert({
-      url,
-      nom: nom || null,
-      date: date || null,
-      lieu: lieu || null,
-      categorie: categorie || null,
-      event_id: selectedEvent.id,
-    });
+    if (uploadedUrls.length === 0 || !selectedEvent) return;
+
+    for (const photoUrl of uploadedUrls) {
+      await supabase.from("photos").insert({
+        url: photoUrl,
+        nom: nom || null,
+        date: date || null,
+        lieu: lieu || null,
+        categorie: categorie || null,
+        event_id: selectedEvent.id,
+      });
+    }
+
+    setUploadedUrls([]);
     resetForm();
     await fetchPhotos(selectedEvent.id);
     await fetchEvents();
@@ -183,34 +200,37 @@ export function AdminPanelGalerie() {
   };
 
   //Upload photos cloudinary
-  const handleUpload = async (file: File) => {
+  const handleUpload = async (files: FileList) => {
     setUploading(true);
     try {
-      const sigRes = await fetch("/api/cloudinary-signature", {
-        method: "POST",
-      });
-      const { timestamp, signature, folder, api_key, cloud_name } =
-        await sigRes.json();
+      const newUrls: string[] = [];
+      for (const file of Array.from(files)) {
+        const sigRes = await fetch("/api/cloudinary-signature", {
+          method: "POST",
+        });
+        const { timestamp, signature, folder, api_key, cloud_name } =
+          await sigRes.json();
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("timestamp", timestamp);
-      formData.append("signature", signature);
-      formData.append("folder", folder);
-      formData.append("api_key", api_key);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("timestamp", timestamp);
+        formData.append("signature", signature);
+        formData.append("folder", folder);
+        formData.append("api_key", api_key);
 
-      const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
-        { method: "POST", body: formData },
-      );
-      const data = await uploadRes.json();
-      setUrl(data.secure_url);
+        const uploadRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+          { method: "POST", body: formData },
+        );
+        const data = await uploadRes.json();
+        newUrls.push(data.secure_url);
+      }
+      setUploadedUrls(newUrls);
     } catch (err) {
       console.error("Upload échoué", err);
     }
     setUploading(false);
   };
-
   // ─── Render ──────────────────────────────────────────────────────────────
   return (
     <div
@@ -273,7 +293,7 @@ export function AdminPanelGalerie() {
                   cursor: "pointer",
                 }}
               >
-                ← Retour
+                <CircleArrowLeft size={20} /> Retour
               </button>
             )}
           </div>
@@ -321,7 +341,7 @@ export function AdminPanelGalerie() {
                 {/* Date bloc */}
                 <div
                   style={{
-                    background: "rgba(232,24,109,0.1)",
+                    background: "#e8186d",
                     borderRadius: "10px",
                     padding: "0.5rem 0.75rem",
                     textAlign: "center",
@@ -329,19 +349,12 @@ export function AdminPanelGalerie() {
                     flexShrink: 0,
                   }}
                 >
-                  <div
-                    className="font-bebas text-2xl leading-none"
-                    style={{ color: "#e8186d" }}
-                  >
+                  <div className="font-bebas text-2xl text-white leading-none">
                     {new Date(event.date).getDate()}
                   </div>
-                  <div
-                    className="font-barlow-condensed uppercase text-xs"
-                    style={{ color: "rgba(232,24,109,0.7)" }}
-                  >
+                  <div className="font-barlow-condensed uppercase text-white/80 text-xs">
                     {new Date(event.date).toLocaleDateString("fr-FR", {
                       month: "short",
-                      year: "2-digit",
                     })}
                   </div>
                 </div>
@@ -531,9 +544,15 @@ export function AdminPanelGalerie() {
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleUpload(file);
+                        if (e.target.files && e.target.files.length > 0) {
+                          if (e.target.files.length > 10) {
+                            alert("Maximum 10 photos à la fois");
+                            return;
+                          }
+                          handleUpload(e.target.files);
+                        }
                       }}
                       style={{
                         width: "100%",
@@ -678,8 +697,14 @@ export function AdminPanelGalerie() {
                         <option value="route" style={{ background: "#1a1a1a" }}>
                           Route
                         </option>
-                        <option value="cross" style={{ background: "#1a1a1a" }}>
-                          Cross
+                        <option
+                          value="entrainement"
+                          style={{ background: "#1a1a1a" }}
+                        >
+                          Entraînement
+                        </option>
+                        <option value="club" style={{ background: "#1a1a1a" }}>
+                          Vie du club
                         </option>
                       </select>
                     </div>
@@ -799,6 +824,28 @@ export function AdminPanelGalerie() {
                         </p>
                       </div>
                     )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCover(photo.id);
+                      }}
+                      className="font-barlow-condensed uppercase text-xs"
+                      style={{
+                        position: "absolute",
+                        top: "0.5rem",
+                        right: "0.5rem",
+                        background: photo.is_cover
+                          ? "#e8186d"
+                          : "rgba(0,0,0,0.5)",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        color: "#fff",
+                        padding: "0.25rem 0.5rem",
+                        borderRadius: "999px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {photo.is_cover ? "★ Cover" : "Cover"}
+                    </button>
                   </div>
                 ))}
               </div>

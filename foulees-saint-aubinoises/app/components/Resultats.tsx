@@ -3,6 +3,7 @@
 import { Resultats } from "../types/database";
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+
 type Badge = {
   id: string;
   label: string;
@@ -15,7 +16,8 @@ const BADGES: Badge[] = [
     id: "podium",
     label: "Podium",
     image: "/badges/podium.png",
-    condition: (r) => r.some((x) => x.classement !== null && x.classement <= 3),
+    condition: (r) =>
+      r.some((x) => x.classement !== null && Number(x.classement) <= 3),
   },
   {
     id: "regulier",
@@ -63,7 +65,7 @@ const BADGES: Badge[] = [
     label: "Bon Runner",
     image: "/badges/bonrunner.png",
     condition: (r) =>
-      r.some((x) => x.classement !== null && x.classement <= 10),
+      r.some((x) => x.classement !== null && Number(x.classement) <= 10),
   },
   {
     id: "lent",
@@ -84,6 +86,7 @@ const BADGES: Badge[] = [
     condition: (r) => r.length >= 10,
   },
 ];
+
 export function ResultatsList({
   resultats: initialResultats,
 }: {
@@ -92,19 +95,14 @@ export function ResultatsList({
   const [resultats, setResultats] = useState(initialResultats);
   const [recherche, setRecherche] = useState("");
   const [hovered, setHovered] = useState<string | null>(null);
-
-  // Modal states
   const [modal, setModal] = useState<"closed" | "login" | "form">("closed");
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-
-  // Login form
+  const [selectedBadges, setSelectedBadges] = useState<string[]>([]);
   const [email, setEmail] = useState("");
   const [mdp, setMdp] = useState("");
-
-  // Résultat form
   const [form, setForm] = useState({
     course: "",
     date: "",
@@ -112,18 +110,25 @@ export function ResultatsList({
     temps: "",
     classement: "",
   });
+
   const filtered = resultats.filter(
     (r) =>
       r.personnes?.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
       r.personnes?.prenom?.toLowerCase().includes(recherche.toLowerCase()) ||
       r.course?.toLowerCase().includes(recherche.toLowerCase()),
   );
-
   const sorted = [...filtered].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
-  // Login
+  const toggleBadge = (badgeId: string) => {
+    setSelectedBadges((prev) =>
+      prev.includes(badgeId)
+        ? prev.filter((b) => b !== badgeId)
+        : [...prev, badgeId],
+    );
+  };
+
   const handleLogin = async () => {
     setLoginLoading(true);
     setLoginError("");
@@ -139,7 +144,6 @@ export function ResultatsList({
     setLoginLoading(false);
   };
 
-  // Submit résultat
   const handleSubmit = async () => {
     setSubmitLoading(true);
     const {
@@ -150,13 +154,11 @@ export function ResultatsList({
       return;
     }
 
-    // Récupérer la personne
     const { data: personne } = await supabase
       .from("personnes")
       .select("id, nom, prenom")
       .eq("users_id", user.id)
       .single();
-
     if (!personne) {
       setSubmitLoading(false);
       return;
@@ -171,18 +173,21 @@ export function ResultatsList({
         temps: form.temps,
         classement: Number(form.classement),
         coureur_id: personne.id,
+        badges: selectedBadges,
       })
       .select(
-        "id, course, date, distance, temps, classement, coureur_id, created_at",
-      ) // ← colonnes explicites
+        "id, course, date, distance, temps, classement, coureur_id, created_at, badges",
+      )
       .single();
 
     if (!error && newResult) {
-      const resultAvecPersonne = {
-        ...newResult,
-        personnes: { nom: personne.nom, prenom: personne.prenom },
-      };
-      setResultats((prev) => [resultAvecPersonne, ...prev]);
+      setResultats((prev) => [
+        {
+          ...newResult,
+          personnes: { nom: personne.nom, prenom: personne.prenom },
+        },
+        ...prev,
+      ]);
       setSubmitSuccess(true);
       setTimeout(() => {
         setModal("closed");
@@ -194,6 +199,7 @@ export function ResultatsList({
           temps: "",
           classement: "",
         });
+        setSelectedBadges([]);
         supabase.auth.signOut();
       }, 1500);
     }
@@ -282,7 +288,6 @@ export function ResultatsList({
             label: "Coureurs",
             value: new Set(resultats.map((r) => r.coureur_id)).size,
           },
-
           {
             label: "Courses",
             value: new Set(resultats.map((r) => r.course)).size,
@@ -338,135 +343,223 @@ export function ResultatsList({
             onMouseEnter={() => setHovered(result.id)}
             onMouseLeave={() => setHovered(null)}
             style={{
+              position: "relative",
               background:
                 hovered === result.id ? "rgba(232,24,109,0.05)" : "#1a1a1a",
               border: `1px solid ${hovered === result.id ? "rgba(232,24,109,0.3)" : "rgba(255,255,255,0.06)"}`,
               borderRadius: "12px",
               padding: "1.25rem 1.5rem",
-              display: "grid",
-              gridTemplateColumns: "auto 1px 1fr auto",
-              gap: "1.5rem",
-              alignItems: "center",
               transition: "all 0.2s",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              gap: "2rem",
             }}
           >
-            <div style={{ textAlign: "center", minWidth: "48px" }}>
-              <div
-                className="font-bebas"
-                style={{ fontSize: "2rem", color: "#fff", lineHeight: 1 }}
-              >
-                {new Date(result.date).getDate()}
-              </div>
-              <div
-                className="font-barlow-condensed uppercase"
-                style={{
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.08em",
-                  color: "#e8186d",
-                }}
-              >
-                {new Date(result.date).toLocaleDateString("fr-FR", {
-                  month: "short",
-                  year: "2-digit",
-                })}
-              </div>
-            </div>
+            {/* Barre latérale rose */}
             <div
               style={{
-                background: "rgba(255,255,255,0.06)",
-                alignSelf: "stretch",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: "4px",
+                background: "#e8186d",
+                borderRadius: "4px 0 0 4px",
               }}
             />
-            <div style={{ minWidth: 0 }}>
+
+            {/* Infos — flex 1, ne bouge jamais */}
+            <div style={{ flex: 1, paddingLeft: "0.75rem", minWidth: 0 }}>
+              {/* Ligne 1 : date + nom event */}
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.75rem",
-                  marginBottom: "0.35rem",
-                  flexWrap: "wrap",
+                  gap: "0.4rem",
+                  marginBottom: "0.3rem",
                 }}
               >
                 <p
-                  className="font-barlow-condensed font-bold"
-                  style={{ fontSize: "1rem", color: "#fff" }}
+                  className="font-barlow-condensed"
+                  style={{
+                    fontSize: "1rem",
+                    color: "rgba(255, 255, 255, 0.79)",
+                  }}
                 >
-                  {result.personnes
-                    ? `${result.personnes.prenom} ${result.personnes.nom}`
-                    : "Anonyme"}
+                  {new Date(result.date).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "short",
+                    year: "2-digit",
+                  })}
                 </p>
                 <span
                   style={{
                     width: "3px",
                     height: "3px",
                     borderRadius: "50%",
-                    background: "rgba(255,255,255,0.2)",
+                    background: "rgba(255, 255, 255, 0.79)",
+                    flexShrink: 0,
                   }}
                 />
                 <p
-                  className="font-barlow-condensed"
-                  style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.5)" }}
+                  className="font-barlow-condensed uppercase"
+                  style={{
+                    fontSize: "1rem",
+                    color: "rgba(255, 255, 255, 0.79)",
+                    letterSpacing: "0.06em",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
                 >
                   {result.course}
                 </p>
               </div>
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                {result.distance && (
-                  <span
-                    className="font-barlow"
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "rgba(255,255,255,0.35)",
-                    }}
-                  >
-                    📏 {result.distance} km
-                  </span>
-                )}
-                {result.temps && (
-                  <span
-                    className="font-barlow"
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "rgba(255,255,255,0.35)",
-                    }}
-                  >
-                    ⏱ {result.temps}
-                  </span>
-                )}
+
+              {/* Ligne 2 : nom + capsules sur une seule ligne */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                  flexWrap: "nowrap",
+                }}
+              >
+                <p
+                  className="font-bebas"
+                  style={{
+                    fontSize: "2.5rem",
+                    color: "#fff",
+                    lineHeight: 1,
+                    letterSpacing: "0.04em",
+                    flexShrink: 0,
+                  }}
+                >
+                  {result.personnes
+                    ? `${result.personnes.prenom} ${result.personnes.nom}`
+                    : "Anonyme"}
+                </p>
+
+                {/* Capsules */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    flexShrink: 0,
+                  }}
+                >
+                  {result.distance && (
+                    <div
+                      className="font-barlow-condensed uppercase"
+                      style={{
+                        padding: "0.3rem 0.7rem",
+                        background: "#e8186d",
+                        borderRadius: "999px",
+                        fontSize: "0.9rem",
+                        color: "#fff",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {result.distance} km
+                    </div>
+                  )}
+                  {result.temps && (
+                    <div
+                      className="font-barlow-condensed uppercase"
+                      style={{
+                        padding: "0.3rem 0.7rem",
+                        background: "#e8186d",
+                        borderRadius: "999px",
+                        fontSize: "0.9rem",
+                        color: "#fff",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {result.temps}
+                    </div>
+                  )}
+                  {result.classement && Number(result.classement) <= 3 && (
+                    <div
+                      className="font-barlow-condensed uppercase"
+                      style={{
+                        marginLeft: "0.5rem",
+                        padding: "0.3rem 0.7rem",
+                        background: "#e8186d",
+                        borderRadius: "999px",
+                        fontSize: "0.9rem",
+                        color: "#fff",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      TOP {result.classement}
+                    </div>
+                  )}
+                  {result.classement && Number(result.classement) > 3 && (
+                    <div
+                      className="font-barlow-condensed uppercase"
+                      style={{
+                        marginLeft: "0.5rem",
+                        padding: "0.3rem 0.7rem",
+                        background: "#e8186d",
+                        borderRadius: "999px",
+                        fontSize: "0.72rem",
+                        color: "#fff",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {result.classement}e
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            <div style={{ textAlign: "right", flexShrink: 0 }}>
-              {result.classement && (
-                <div>
-                  <p
-                    className="font-bebas"
-                    style={{
-                      fontSize: "1.8rem",
-                      color:
-                        Number(result.classement) <= 3 ? "#e8186d" : "#fff",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {result.classement}
-                  </p>
-                  <p
-                    className="font-barlow-condensed uppercase"
-                    style={{
-                      fontSize: "0.6rem",
-                      letterSpacing: "0.08em",
-                      color: "rgba(255,255,255,0.3)",
-                    }}
-                  >
-                    classement
-                  </p>
-                </div>
-              )}
+
+            {/* Badges — à droite, taille fixe */}
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                alignItems: "center",
+                flexShrink: 0,
+                minWidth: "200px",
+                justifyContent: "flex-end",
+              }}
+            >
+              {result.badges && result.badges.length > 0
+                ? result.badges.map((badgeId: string) => {
+                    const badge = BADGES.find((b) => b.id === badgeId);
+                    if (!badge) return null;
+                    return (
+                      <img
+                        key={badgeId}
+                        src={badge.image}
+                        alt={badge.label}
+                        title={badge.label}
+                        style={{
+                          width: "150px",
+                          height: "150px",
+                          objectFit: "contain",
+                          filter: "drop-shadow(0 0 8px rgba(232,24,109,0.5))",
+                          transition: "transform 0.2s",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.transform = "scale(1.15)")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.transform = "scale(1)")
+                        }
+                      />
+                    );
+                  })
+                : null}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal overlay */}
+      {/* Modal */}
       {modal !== "closed" && (
         <div
           onClick={closeModal}
@@ -489,7 +582,9 @@ export function ResultatsList({
               borderRadius: "16px",
               padding: "2rem",
               width: "100%",
-              maxWidth: "420px",
+              maxWidth: "480px",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
           >
             {/* Login */}
@@ -663,6 +758,87 @@ export function ResultatsList({
                       className="font-barlow"
                       style={inputStyle}
                     />
+
+                    {/* Sélecteur badges */}
+                    <div>
+                      <p
+                        className="font-barlow-condensed uppercase text-xs"
+                        style={{
+                          color: "rgba(255,255,255,0.3)",
+                          marginBottom: "0.75rem",
+                        }}
+                      >
+                        Tes badges pour cette course (max 3)
+                      </p>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        {BADGES.map((badge) => {
+                          const actif = selectedBadges.includes(badge.id);
+                          return (
+                            <div
+                              key={badge.id}
+                              onClick={() => {
+                                if (!actif && selectedBadges.length >= 3)
+                                  return;
+                                toggleBadge(badge.id);
+                              }}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.4rem",
+                                padding: "0.35rem 0.65rem",
+                                borderRadius: "999px",
+                                border: actif
+                                  ? "1px solid #e8186d"
+                                  : "1px solid rgba(255,255,255,0.1)",
+                                background: actif
+                                  ? "rgba(232,24,109,0.1)"
+                                  : "transparent",
+                                cursor:
+                                  selectedBadges.length >= 3 && !actif
+                                    ? "not-allowed"
+                                    : "pointer",
+                                opacity:
+                                  selectedBadges.length >= 3 && !actif
+                                    ? 0.4
+                                    : 1,
+                                transition: "all 0.15s",
+                              }}
+                            >
+                              <img
+                                src={badge.image}
+                                alt={badge.label}
+                                style={{
+                                  width: "44px",
+                                  height: "44px",
+                                  objectFit: "contain",
+                                  filter:
+                                    "drop-shadow(0 0 6px rgba(232,24,109,0.4))",
+                                  transition: "transform 0.2s",
+                                }}
+                              />
+                              <span
+                                className="font-barlow-condensed uppercase"
+                                style={{
+                                  fontSize: "0.65rem",
+                                  color: actif
+                                    ? "#e8186d"
+                                    : "rgba(255,255,255,0.4)",
+                                }}
+                              >
+                                {badge.label}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
                     <button
                       onClick={handleSubmit}
                       disabled={submitLoading}

@@ -19,9 +19,9 @@ export const metadata: Metadata = {
 };
 async function GalerieData() {
   const { data: events } = await supabase.from("events").select(`
-    *,
-    photos (url)
-  `);
+  *,
+  photos (url, is_cover)
+`);
   return <Galerie events={events ?? []} />;
 }
 

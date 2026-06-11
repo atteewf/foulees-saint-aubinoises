@@ -376,9 +376,6 @@ export function AdminPanelAgenda() {
                   <option value="route" style={{ background: "#1a1a1a" }}>
                     Route
                   </option>
-                  <option value="cross" style={{ background: "#1a1a1a" }}>
-                    Cross
-                  </option>
                   <option
                     value="entrainement"
                     style={{ background: "#1a1a1a" }}

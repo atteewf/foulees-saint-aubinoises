@@ -16,6 +16,7 @@ export type Photos = {
   lieu: string | null;
   categorie: string | null;
   event_id: string;
+  is_cover?: boolean;
 };
 export type Resultats = {
   id: string;
@@ -30,6 +31,7 @@ export type Resultats = {
     nom: string;
     prenom: string;
   } | null;
+  badges?: string[];
 };
 export type Escapade = {
   id: string;
