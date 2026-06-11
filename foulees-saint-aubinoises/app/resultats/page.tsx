@@ -40,22 +40,6 @@ export default function ResultatPage() {
           zIndex: 0,
         }}
       />
-      {/* Semelle fond */}
-      <img
-        src="/foulees/tong.svg"
-        alt=""
-        style={{
-          position: "fixed",
-          right: "-10%", // déborde légèrement à droite
-          bottom: "0",
-          height: "90vh",
-          opacity: 0.6, // très discret
-          filter:
-            "invert(27%) sepia(90%) saturate(2000%) hue-rotate(310deg) brightness(90%)",
-          pointerEvents: "none",
-          zIndex: 0, // derrière le contenu
-        }}
-      />
 
       <div
         style={{
