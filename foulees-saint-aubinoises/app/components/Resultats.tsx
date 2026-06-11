@@ -38,8 +38,7 @@ const BADGES: Badge[] = [
     id: "trailer",
     label: "Trailer",
     image: "/badges/trailer.png",
-    condition: (r) =>
-      r.some((x) => x.type === "trail" && Number(x.distance) >= 20),
+    condition: (r) => r.some((x) => Number(x.distance) >= 20),
   },
   {
     id: "rapide",
