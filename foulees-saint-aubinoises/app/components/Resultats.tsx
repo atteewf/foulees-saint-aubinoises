@@ -211,7 +211,8 @@ export function ResultatsList({
       setSubmitLoading(false);
       return;
     }
-
+    console.log("personne avant insert:", personne);
+    console.log("formPrenom:", formPrenom, "formNom:", formNom);
     const { data: newResult, error } = await supabase
       .from("resultats")
       .insert({
