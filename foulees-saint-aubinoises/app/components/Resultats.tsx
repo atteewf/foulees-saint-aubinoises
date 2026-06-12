@@ -1,7 +1,7 @@
 "use client";
 
 import { Resultats } from "../types/database";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
 type Badge = {
@@ -85,7 +85,7 @@ const BADGES: Badge[] = [
     condition: (r) => r.length >= 10,
   },
 ];
-//jnklsdjdskl
+
 export function ResultatsList({
   resultats: initialResultats,
 }: {
@@ -109,6 +109,34 @@ export function ResultatsList({
     temps: "",
     classement: "",
   });
+  const [formNom, setFormNom] = useState("");
+  const [formPrenom, setFormPrenom] = useState("");
+  const [deleteId, setDeleteId] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: personne } = await supabase
+        .from("personnes")
+        .select("is_admin")
+        .eq("users_id", user.id)
+        .single();
+      if (personne?.is_admin) setIsAdmin(true);
+    };
+    checkAdmin();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Supprimer ce résultat ?")) return;
+    const { error } = await supabase.from("resultats").delete().eq("id", id);
+    if (!error) {
+      setResultats((prev) => prev.filter((r) => r.id !== id));
+    }
+  };
 
   const filtered = resultats.filter(
     (r) =>
@@ -152,12 +180,33 @@ export function ResultatsList({
       setSubmitLoading(false);
       return;
     }
+    // Cherche la personne par nom/prénom ou la crée
+    let personne;
 
-    const { data: personne } = await supabase
-      .from("personnes")
-      .select("id, nom, prenom")
-      .eq("users_id", user.id)
-      .single();
+    if (isAdmin && formNom && formPrenom) {
+      const res = await fetch("/api/personnes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: formNom, prenom: formPrenom }),
+      });
+      personne = await res.json();
+    } else {
+      // Membre — utilise son propre compte
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setSubmitLoading(false);
+        return;
+      }
+      const { data: self } = await supabase
+        .from("personnes")
+        .select("id, nom, prenom")
+        .eq("users_id", user.id)
+        .single();
+      personne = self;
+    }
+
     if (!personne) {
       setSubmitLoading(false);
       return;
@@ -170,7 +219,7 @@ export function ResultatsList({
         date: form.date,
         distance: Number(form.distance),
         temps: form.temps,
-        classement: Number(form.classement),
+        classement: form.classement ? Number(form.classement) : null,
         coureur_id: personne.id,
         badges: selectedBadges,
       })
@@ -183,7 +232,10 @@ export function ResultatsList({
       setResultats((prev) => [
         {
           ...newResult,
-          personnes: { nom: personne.nom, prenom: personne.prenom },
+          personnes: {
+            nom: personne?.nom ?? formNom,
+            prenom: personne?.prenom ?? formPrenom,
+          },
         },
         ...prev,
       ]);
@@ -198,6 +250,8 @@ export function ResultatsList({
           temps: "",
           classement: "",
         });
+        setFormNom("");
+        setFormPrenom("");
         setSelectedBadges([]);
         supabase.auth.signOut();
       }, 1500);
@@ -435,9 +489,7 @@ export function ResultatsList({
                     flexShrink: 0,
                   }}
                 >
-                  {result.personnes
-                    ? `${result.personnes.prenom} ${result.personnes.nom}`
-                    : "Anonyme"}
+                  {result.personnes ? `${result.personnes.prenom}` : "Anonyme"}
                 </p>
 
                 {/* Capsules */}
@@ -708,6 +760,31 @@ export function ResultatsList({
                       gap: "0.75rem",
                     }}
                   >
+                    <div
+                      className="grid grid-cols-1"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "0.75rem",
+                      }}
+                    >
+                      <input
+                        type="text"
+                        placeholder="Prénom"
+                        value={formPrenom}
+                        onChange={(e) => setFormPrenom(e.target.value)}
+                        className="font-barlow"
+                        style={inputStyle}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Nom"
+                        value={formNom}
+                        onChange={(e) => setFormNom(e.target.value)}
+                        className="font-barlow"
+                        style={inputStyle}
+                      />
+                    </div>
                     <input
                       type="text"
                       placeholder="Nom de la course"
@@ -857,6 +934,88 @@ export function ResultatsList({
                     >
                       {submitLoading ? "Envoi..." : "Enregistrer"}
                     </button>
+                    {isAdmin && (
+                      <div
+                        style={{
+                          marginTop: "1.5rem",
+                          borderTop: "1px solid rgba(255,255,255,0.07)",
+                          paddingTop: "1.5rem",
+                        }}
+                      >
+                        <p
+                          className="font-barlow-condensed uppercase text-xs"
+                          style={{
+                            color: "rgba(255,255,255,0.3)",
+                            marginBottom: "0.75rem",
+                          }}
+                        >
+                          Supprimer un résultat
+                        </p>
+                        <select
+                          value={deleteId}
+                          onChange={(e) => setDeleteId(e.target.value)}
+                          style={{
+                            width: "100%",
+                            background: "rgba(255,255,255,0.05)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "8px",
+                            padding: "0.75rem 1rem",
+                            color: "#fff",
+                            fontSize: "0.875rem",
+                            outline: "none",
+                            marginBottom: "0.75rem",
+                          }}
+                        >
+                          <option value="" style={{ background: "#1a1a1a" }}>
+                            Sélectionner un résultat
+                          </option>
+                          {sorted.map((r) => (
+                            <option
+                              key={r.id}
+                              value={r.id}
+                              style={{ background: "#1a1a1a" }}
+                            >
+                              {r.personnes?.prenom ?? "Anonyme"} — {r.course} (
+                              {new Date(r.date).toLocaleDateString("fr-FR", {
+                                day: "numeric",
+                                month: "short",
+                                year: "2-digit",
+                              })}
+                              )
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={async () => {
+                            if (!deleteId) return;
+                            if (!confirm("Supprimer ce résultat ?")) return;
+                            const { error } = await supabase
+                              .from("resultats")
+                              .delete()
+                              .eq("id", deleteId);
+                            if (!error) {
+                              setResultats((prev) =>
+                                prev.filter((r) => r.id !== deleteId),
+                              );
+                              setDeleteId("");
+                            }
+                          }}
+                          className="font-barlow-condensed uppercase"
+                          style={{
+                            width: "100%",
+                            background: "rgba(239,68,68,0.1)",
+                            border: "1px solid rgba(239,68,68,0.2)",
+                            color: "#ef4444",
+                            padding: "0.75rem",
+                            borderRadius: "8px",
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
