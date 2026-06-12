@@ -422,7 +422,7 @@ export function ResultatsList({
                   display: "flex",
                   alignItems: "center",
                   gap: "0.75rem",
-                  flexWrap: "nowrap",
+                  flexWrap: "wrap",
                 }}
               >
                 <p
@@ -517,12 +517,12 @@ export function ResultatsList({
 
             {/* Badges — à droite, taille fixe */}
             <div
+              className="badges-desktop"
               style={{
                 display: "flex",
                 gap: "0.5rem",
                 alignItems: "center",
                 flexShrink: 0,
-                minWidth: "200px",
                 justifyContent: "flex-end",
               }}
             >

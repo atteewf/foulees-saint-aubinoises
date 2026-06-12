@@ -19,6 +19,13 @@
   font-family: var(--font-bebas);
 }
 
+@media (max-width: 600px) {
+  .badges-desktop img {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
 @utility font-barlow {
   font-family: var(--font-barlow);
 }
