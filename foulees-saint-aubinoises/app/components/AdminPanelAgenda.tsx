@@ -47,10 +47,14 @@ export function AdminPanelAgenda() {
     setType(event.type ?? "");
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
-
   const handleDelete = async ({ id }: { id: string }) => {
     if (!confirm("Supprimer cet événement ?")) return;
-    await supabase.from("events").delete().eq("id", id);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    console.log("user connecté:", user);
+    const { error } = await supabase.from("events").delete().eq("id", id);
+    console.log("delete error:", error);
     await fetchAgenda();
   };
 

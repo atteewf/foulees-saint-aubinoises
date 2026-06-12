@@ -2,6 +2,8 @@ import { supabase } from "@/app/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
+import { GalerieLightbox } from "@/app/components/GalerieLightbox";
+import { CircleArrowLeft } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -78,17 +80,19 @@ export default async function GalerieDetailPage({
           href="/galerie"
           className="font-barlow-condensed uppercase"
           style={{
-            fontSize: "0.75rem",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            fontSize: "0.8rem",
             letterSpacing: "0.1em",
             color: "rgba(255,255,255,0.4)",
             textDecoration: "none",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.4rem",
-            marginBottom: "2rem",
+            border: "1px solid rgba(255,255,255,0.1)",
+            padding: "0.6rem 1.5rem",
+            borderRadius: "999px",
           }}
         >
-          ← Retour à la galerie
+          <CircleArrowLeft size={16} /> Retour à la galerie
         </Link>
 
         {/* Header event */}
@@ -181,63 +185,7 @@ export default async function GalerieDetailPage({
 
         {/* Grille photos */}
         {photos && photos.length > 0 ? (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: "0.75rem",
-            }}
-          >
-            {photos.map((photo) => (
-              <div
-                key={photo.id}
-                style={{
-                  position: "relative",
-                  aspectRatio: "1",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                }}
-                className="group"
-              >
-                <Image
-                  src={photo.url}
-                  fill
-                  style={{ objectFit: "cover" }}
-                  className="group-hover:scale-105 transition-transform duration-300"
-                  alt={photo.nom ?? "photo"}
-                />
-                {/* Overlay hover */}
-                <div
-                  className="group-hover:opacity-100"
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)",
-                    opacity: 0,
-                    transition: "opacity 0.25s",
-                  }}
-                />
-                {photo.nom && (
-                  <p
-                    className="font-barlow-condensed group-hover:opacity-100"
-                    style={{
-                      position: "absolute",
-                      bottom: "0.75rem",
-                      left: "0.75rem",
-                      right: "0.75rem",
-                      fontSize: "0.75rem",
-                      color: "#fff",
-                      opacity: 0,
-                      transition: "opacity 0.25s",
-                    }}
-                  >
-                    {photo.nom}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
+          <GalerieLightbox photos={photos} />
         ) : (
           <div style={{ textAlign: "center", padding: "4rem 0" }}>
             <p
@@ -258,14 +206,15 @@ export default async function GalerieDetailPage({
             </p>
           </div>
         )}
-
         {/* Retour bas */}
         <div style={{ textAlign: "center", marginTop: "3rem" }}>
           <Link
             href="/galerie"
             className="font-barlow-condensed uppercase"
             style={{
-              display: "inline-block",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
               fontSize: "0.8rem",
               letterSpacing: "0.1em",
               color: "rgba(255,255,255,0.4)",
@@ -275,7 +224,7 @@ export default async function GalerieDetailPage({
               borderRadius: "999px",
             }}
           >
-            ← Retour à la galerie
+            <CircleArrowLeft size={16} /> Retour à la galerie
           </Link>
         </div>
       </div>
