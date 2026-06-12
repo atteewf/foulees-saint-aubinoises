@@ -39,6 +39,81 @@ export function AdminPanelGalerie() {
   const [uploading, setUploading] = useState(false);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
 
+  //State new photo
+  const [showNewEventForm, setShowNewEventForm] = useState(false);
+  const [newEventNom, setNewEventNom] = useState("");
+  const [newEventDate, setNewEventDate] = useState("");
+  const [newEventType, setNewEventType] = useState("");
+  const [newEventLieu, setNewEventLieu] = useState("");
+  const [newEventUrls, setNewEventUrls] = useState<string[]>([]);
+  const [newEventUploading, setNewEventUploading] = useState(false);
+  const [newEventDescription, setNewEventDescription] = useState("");
+
+  const handleCreateEvent = async () => {
+    if (!newEventNom || !newEventDate || !newEventType) return;
+
+    const { data: newEvent, error } = await supabase
+      .from("events")
+      .insert({
+        nom: newEventNom,
+        date: newEventDate,
+        type: newEventType,
+        lieu: newEventLieu || null,
+        description: newEventDescription || null,
+      })
+      .select("*")
+      .single();
+
+    if (error || !newEvent) {
+      console.error("Erreur création event:", error);
+      return;
+    }
+
+    for (const photoUrl of newEventUrls) {
+      await supabase.from("photos").insert({
+        url: photoUrl,
+        event_id: newEvent.id,
+      });
+    }
+
+    setNewEventNom("");
+    setNewEventDate("");
+    setNewEventType("");
+    setNewEventLieu("");
+    setNewEventDescription("");
+    setNewEventUrls([]);
+    setShowNewEventForm(false);
+    await fetchEvents();
+  };
+  const handleNewEventUpload = async (files: FileList) => {
+    setNewEventUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        const sigRes = await fetch("/api/cloudinary-signature", {
+          method: "POST",
+        });
+        const { timestamp, signature, folder, api_key, cloud_name } =
+          await sigRes.json();
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("timestamp", timestamp);
+        formData.append("signature", signature);
+        formData.append("folder", folder);
+        formData.append("api_key", api_key);
+        const uploadRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+          { method: "POST", body: formData },
+        );
+        const data = await uploadRes.json();
+        urls.push(data.secure_url);
+      }
+      setNewEventUrls(urls);
+    } catch (err) {
+      console.error("Upload échoué", err);
+    }
+    setNewEventUploading(false);
+  };
   // ─── Fetch events avec count photos ──────────────────────────────────────
 
   const fetchEvents = async () => {
@@ -310,7 +385,294 @@ export function AdminPanelGalerie() {
             Déconnexion
           </button>
         </div>
+        {/* Bouton + formulaire nouvel event */}
+        <div
+          style={{
+            marginBottom: "1.5rem",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          <button
+            onClick={() => setShowNewEventForm(!showNewEventForm)}
+            className="font-barlow-condensed uppercase text-xs"
+            style={{
+              background: showNewEventForm
+                ? "rgba(255,255,255,0.06)"
+                : "#e8186d",
+              border: showNewEventForm
+                ? "1px solid rgba(255,255,255,0.1)"
+                : "none",
+              color: "#fff",
+              padding: "0.5rem 1.25rem",
+              borderRadius: "999px",
+              cursor: "pointer",
+            }}
+          >
+            {showNewEventForm ? "Annuler" : "+ Nouvel événement"}
+          </button>
+        </div>
 
+        {showNewEventForm && (
+          <div
+            style={{
+              background: "#1a1a1a",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "16px",
+              padding: "1.75rem",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <h2
+              className="font-bebas text-xl"
+              style={{ color: "#fff", marginBottom: "1.25rem" }}
+            >
+              Créer un événement + photos
+            </h2>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    className="font-barlow-condensed uppercase text-xs tracking-widest"
+                    style={{
+                      color: "rgba(255,255,255,0.3)",
+                      display: "block",
+                      marginBottom: "0.4rem",
+                    }}
+                  >
+                    Nom *
+                  </label>
+                  <input
+                    type="text"
+                    value={newEventNom}
+                    onChange={(e) => setNewEventNom(e.target.value)}
+                    placeholder="Nom de l'événement"
+                    style={{
+                      width: "100%",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "10px",
+                      padding: "0.75rem 1rem",
+                      color: "#fff",
+                      fontSize: "0.9rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    className="font-barlow-condensed uppercase text-xs tracking-widest"
+                    style={{
+                      color: "rgba(255,255,255,0.3)",
+                      display: "block",
+                      marginBottom: "0.4rem",
+                    }}
+                  >
+                    Type *
+                  </label>
+                  <select
+                    value={newEventType}
+                    onChange={(e) => setNewEventType(e.target.value)}
+                    style={{
+                      width: "100%",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "10px",
+                      padding: "0.75rem 1rem",
+                      color: "#fff",
+                      fontSize: "0.9rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <option value="" style={{ background: "#1a1a1a" }}>
+                      Sélectionner
+                    </option>
+                    <option value="trail" style={{ background: "#1a1a1a" }}>
+                      Trail
+                    </option>
+                    <option value="route" style={{ background: "#1a1a1a" }}>
+                      Route
+                    </option>
+                    <option
+                      value="entrainement"
+                      style={{ background: "#1a1a1a" }}
+                    >
+                      Entraînement
+                    </option>
+                    <option value="club" style={{ background: "#1a1a1a" }}>
+                      Vie du club
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    className="font-barlow-condensed uppercase text-xs tracking-widest"
+                    style={{
+                      color: "rgba(255,255,255,0.3)",
+                      display: "block",
+                      marginBottom: "0.4rem",
+                    }}
+                  >
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={newEventDate}
+                    onChange={(e) => setNewEventDate(e.target.value)}
+                    style={{
+                      width: "100%",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "10px",
+                      padding: "0.75rem 1rem",
+                      color: "#fff",
+                      fontSize: "0.9rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    className="font-barlow-condensed uppercase text-xs tracking-widest"
+                    style={{
+                      color: "rgba(255,255,255,0.3)",
+                      display: "block",
+                      marginBottom: "0.4rem",
+                    }}
+                  >
+                    Lieu
+                  </label>
+                  <input
+                    type="text"
+                    value={newEventLieu}
+                    onChange={(e) => setNewEventLieu(e.target.value)}
+                    placeholder="Lieu (optionnel)"
+                    style={{
+                      width: "100%",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "10px",
+                      padding: "0.75rem 1rem",
+                      color: "#fff",
+                      fontSize: "0.9rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label
+                    className="font-barlow-condensed uppercase text-xs tracking-widest"
+                    style={{
+                      color: "rgba(255,255,255,0.3)",
+                      display: "block",
+                      marginBottom: "0.4rem",
+                    }}
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    value={newEventDescription}
+                    onChange={(e) => setNewEventDescription(e.target.value)}
+                    placeholder="Description de l'événement"
+                    rows={3}
+                    style={{
+                      width: "100%",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "10px",
+                      padding: "0.75rem 1rem",
+                      color: "#fff",
+                      fontSize: "0.9rem",
+                      outline: "none",
+                      resize: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  className="font-barlow-condensed uppercase text-xs tracking-widest"
+                  style={{
+                    color: "rgba(255,255,255,0.3)",
+                    display: "block",
+                    marginBottom: "0.4rem",
+                  }}
+                >
+                  Photos (max 10)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      if (e.target.files.length > 10) {
+                        alert("Maximum 10 photos");
+                        return;
+                      }
+                      handleNewEventUpload(e.target.files);
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "10px",
+                    padding: "0.75rem 1rem",
+                    color: "#fff",
+                    fontSize: "0.9rem",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    cursor: "pointer",
+                  }}
+                />
+                {newEventUploading && (
+                  <p
+                    className="font-barlow text-xs"
+                    style={{ color: "#e8186d", marginTop: "0.4rem" }}
+                  >
+                    Upload en cours...
+                  </p>
+                )}
+                {newEventUrls.length > 0 && !newEventUploading && (
+                  <p
+                    className="font-barlow text-xs"
+                    style={{ color: "rgba(34,197,94,1)", marginTop: "0.4rem" }}
+                  >
+                    ✓ {newEventUrls.length} photo
+                    {newEventUrls.length > 1 ? "s" : ""} prête
+                    {newEventUrls.length > 1 ? "s" : ""}
+                  </p>
+                )}
+              </div>
+
+              <button
+                onClick={handleCreateEvent}
+                disabled={newEventUploading}
+                className="font-barlow-condensed uppercase tracking-widest text-sm"
+                style={{
+                  background: "#e8186d",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "999px",
+                  padding: "0.75rem 1.5rem",
+                  opacity: newEventUploading ? 0.5 : 1,
+                  cursor: newEventUploading ? "not-allowed" : "pointer",
+                }}
+              >
+                {newEventUploading ? "Upload en cours..." : "Créer l'événement"}
+              </button>
+            </div>
+          </div>
+        )}
         {/* ── VUE EVENTS ── */}
         {vue === "events" && (
           <div
