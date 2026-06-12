@@ -166,6 +166,19 @@ export function ResultatsList({
     if (error) {
       setLoginError("Email ou mot de passe incorrect.");
     } else {
+      // Check admin après connexion
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data: personne, error: errPersonne } = await supabase
+          .from("personnes")
+          .select("is_admin")
+          .eq("users_id", user.id)
+          .single();
+        console.log("personne:", personne, "erreur:", errPersonne);
+        if (personne?.is_admin) setIsAdmin(true);
+      }
       setModal("form");
     }
     setLoginLoading(false);
@@ -180,39 +193,18 @@ export function ResultatsList({
       setSubmitLoading(false);
       return;
     }
-    // Cherche la personne par nom/prénom ou la crée
-    let personne;
 
-    if (isAdmin && formNom && formPrenom) {
-      const res = await fetch("/api/personnes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nom: formNom, prenom: formPrenom }),
-      });
-      personne = await res.json();
-    } else {
-      // Membre — utilise son propre compte
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        setSubmitLoading(false);
-        return;
-      }
-      const { data: self } = await supabase
-        .from("personnes")
-        .select("id, nom, prenom")
-        .eq("users_id", user.id)
-        .single();
-      personne = self;
-    }
-
-    if (!personne) {
+    const res = await fetch("/api/personnes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom: formNom, prenom: formPrenom }),
+    });
+    const personne = await res.json();
+    if (!personne?.id) {
       setSubmitLoading(false);
       return;
     }
-    console.log("personne avant insert:", personne);
-    console.log("formPrenom:", formPrenom, "formNom:", formNom);
+
     const { data: newResult, error } = await supabase
       .from("resultats")
       .insert({
@@ -233,10 +225,7 @@ export function ResultatsList({
       setResultats((prev) => [
         {
           ...newResult,
-          personnes: {
-            nom: personne?.nom ?? formNom,
-            prenom: personne?.prenom ?? formPrenom,
-          },
+          personnes: { nom: personne.nom, prenom: personne.prenom },
         },
         ...prev,
       ]);
@@ -254,7 +243,6 @@ export function ResultatsList({
         setFormNom("");
         setFormPrenom("");
         setSelectedBadges([]);
-        supabase.auth.signOut();
       }, 1500);
     }
     setSubmitLoading(false);
